@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="jpaFixClientPU">
+        <class>cencor.meif.fix.client.jpa.entities.Ack1Entity</class>
+        <class>cencor.meif.fix.client.jpa.entities.Ack2Entity</class>
+        <class>cencor.meif.fix.client.jpa.entities.CatEstatusEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.ErroresEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.NosEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.OcrEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.OtrosMsjFixEntity</class>
+        <properties>
+            <property name="eclipselink.jdbc.url"
+                      value="jdbc:mysql://meif-desa-mysql.c6apwbtypwpn.us-east-1.rds.amazonaws.com:3306/FixClientDB"/>
+            <property name="eclipselink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="eclipselink.jdbc.user"/>
+            <property name="eclipselink.jdbc.password"/>
+        </properties>
+    </persistence-unit>
+</persistence>
