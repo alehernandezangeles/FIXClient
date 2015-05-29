@@ -1,9 +1,7 @@
 package cencor.meif.fix.client.jpa.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -15,7 +13,7 @@ import java.sql.Timestamp;
 public class NosEntity implements Serializable {
     private Long id;
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @javax.persistence.Column(name = "Id")
     public Long getId() {
         return id;
