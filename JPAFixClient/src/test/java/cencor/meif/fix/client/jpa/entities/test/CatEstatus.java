@@ -1,8 +1,9 @@
 package cencor.meif.fix.client.jpa.entities.test;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
+import org.junit.*;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
@@ -12,15 +13,32 @@ import javax.persistence.Persistence;
 public class CatEstatus {
 
     private static EntityManagerFactory emf;
+    private EntityManager em;
 
     @BeforeClass
-    public void init() {
+    public static void init() {
          emf = Persistence.createEntityManagerFactory("jpaFixClientPU");
     }
 
+    @AfterClass
+    public static void free() {
+        emf.close();
+    }
+
+    @Before
+    public void initM() {
+        em = emf.createEntityManager();
+    }
+
+    @After
+    public void freeM() {
+        em.close();
+    }
+
     @Test
-    public void selectAll() {
-        System.out.println(emf);
+    public void findById() {
+        CatEstatusEntity catEstatusEntity = em.find(CatEstatusEntity.class, 1);
+        System.out.println(catEstatusEntity);
     }
 
 }

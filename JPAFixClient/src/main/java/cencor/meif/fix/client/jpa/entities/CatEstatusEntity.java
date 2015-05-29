@@ -65,4 +65,13 @@ public class CatEstatusEntity {
         result = 31 * result + (fechaInsercion != null ? fechaInsercion.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "CatEstatusEntity{" +
+                "id=" + id +
+                ", descripcion='" + descripcion + '\'' +
+                ", fechaInsercion=" + fechaInsercion +
+                '}';
+    }
 }

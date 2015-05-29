@@ -10,11 +10,11 @@
         <class>cencor.meif.fix.client.jpa.entities.OcrEntity</class>
         <class>cencor.meif.fix.client.jpa.entities.OtrosMsjFixEntity</class>
         <properties>
-            <property name="eclipselink.jdbc.url"
+            <property name="javax.persistence.jdbc.url"
                       value="jdbc:mysql://meif-desa-mysql.c6apwbtypwpn.us-east-1.rds.amazonaws.com:3306/FixClientDB"/>
-            <property name="eclipselink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="eclipselink.jdbc.user"/>
-            <property name="eclipselink.jdbc.password"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="portalmei"/>
+            <property name="javax.persistence.jdbc.password" value="portalmeipwd"/>
         </properties>
     </persistence-unit>
 </persistence>
