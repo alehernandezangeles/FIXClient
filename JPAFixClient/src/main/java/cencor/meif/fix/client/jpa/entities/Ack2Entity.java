@@ -1,5 +1,6 @@
 package cencor.meif.fix.client.jpa.entities;
 
+import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -8,7 +9,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "ACK2", schema = "", catalog = "FixClientDB")
-public class Ack2Entity {
+public class Ack2Entity implements Serializable {
     private Long id;
     private String clOrdId;
     private Long valido;

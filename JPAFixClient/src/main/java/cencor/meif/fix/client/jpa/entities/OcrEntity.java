@@ -1,5 +1,6 @@
 package cencor.meif.fix.client.jpa.entities;
 
+import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,7 +11,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @javax.persistence.Table(name = "OCR", schema = "", catalog = "FixClientDB")
-public class OcrEntity {
+public class OcrEntity implements Serializable {
     private Long id;
 
     @Id
