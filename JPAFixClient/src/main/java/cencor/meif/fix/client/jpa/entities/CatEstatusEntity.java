@@ -10,6 +10,13 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "CatEstatus", schema = "", catalog = "FixClientDB")
 public class CatEstatusEntity implements Serializable {
+
+    public static final int NUEVO = 1;
+    public static final int ACK1 = 2;
+    public static final int ACK2 = 3;
+    public static final int ER = 4;
+    public static final int ERROR = 5;
+
     private Integer id;
     private String descripcion;
     private Timestamp fechaInsercion;

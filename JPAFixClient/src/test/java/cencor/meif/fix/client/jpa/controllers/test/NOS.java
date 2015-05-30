@@ -1,6 +1,7 @@
 package cencor.meif.fix.client.jpa.controllers.test;
 
 import cencor.meif.fix.client.jpa.controllers.NosEntityJpaController;
+import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import cencor.meif.fix.client.jpa.entities.NosEntity;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -33,6 +34,7 @@ public class NOS {
 
         NosEntityJpaController controller = new NosEntityJpaController(emf);
         NosEntity nosEntity = new NosEntity();
+        nosEntity.setEstatus(CatEstatusEntity.ACK1);
         nosEntity.setAccount("Account");
         nosEntity.setAllocQty(12000);
         nosEntity.setClOrdId("Id" + date.getTime());
@@ -45,7 +47,7 @@ public class NOS {
         nosEntity.setGrossTradeAmt(1212.12);
         nosEntity.setImporteSolicitado(12121212.25);
         nosEntity.setIva(16.0);
-        nosEntity.setNumAsesorDist("NumAsesorDist");
+        nosEntity.setNumAsesorDist("AsesorDist");
         nosEntity.setOrdType("1");
         nosEntity.setPorcentajeComisionDist(2.44);
         nosEntity.setPrice(1200.21);
@@ -61,7 +63,6 @@ public class NOS {
         nosEntity.setTransactTime(new java.sql.Timestamp(date.getTime()));
 
         try {
-            EntityManager em = controller.getEntityManager();
             controller.create(nosEntity);
         } catch (Exception e) {
             e.printStackTrace();

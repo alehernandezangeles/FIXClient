@@ -23,6 +23,18 @@ public class NosEntity implements Serializable {
         this.id = id;
     }
 
+    private Integer estatus;
+
+    @Basic
+    @javax.persistence.Column(name = "Estatus")
+    public Integer getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(Integer estatus) {
+        this.estatus = estatus;
+    }
+
     private String account;
 
     @Basic
