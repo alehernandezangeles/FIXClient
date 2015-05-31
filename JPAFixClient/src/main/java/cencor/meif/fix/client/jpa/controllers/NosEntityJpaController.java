@@ -10,10 +10,8 @@ import cencor.meif.fix.client.jpa.controllers.exceptions.PreexistingEntityExcept
 import cencor.meif.fix.client.jpa.entities.NosEntity;
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -113,6 +111,22 @@ public class NosEntityJpaController implements Serializable {
                 q.setMaxResults(maxResults);
                 q.setFirstResult(firstResult);
             }
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<NosEntity> findNosByEstatus(int estatus) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<NosEntity> query = cb.createQuery(NosEntity.class);
+            Root<NosEntity> nos = query.from(NosEntity.class);
+            query.select(nos)
+                    .where(cb.equal(nos.get("estatus"), estatus));
+            TypedQuery<NosEntity> q = em.createQuery(query);
+
             return q.getResultList();
         } finally {
             em.close();

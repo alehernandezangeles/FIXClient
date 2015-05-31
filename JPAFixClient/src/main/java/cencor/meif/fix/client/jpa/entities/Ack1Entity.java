@@ -79,4 +79,14 @@ public class Ack1Entity implements Serializable {
         result = 31 * result + (fechaInsercion != null ? fechaInsercion.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Ack1Entity{" +
+                "id=" + id +
+                ", clOrdId='" + clOrdId + '\'' +
+                ", fixMsg='" + fixMsg + '\'' +
+                ", fechaInsercion=" + fechaInsercion +
+                '}';
+    }
 }

@@ -105,4 +105,16 @@ public class Ack2Entity implements Serializable {
         result = 31 * result + (fechaInsercion != null ? fechaInsercion.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Ack2Entity{" +
+                "id=" + id +
+                ", clOrdId='" + clOrdId + '\'' +
+                ", valido=" + valido +
+                ", mensajeError='" + mensajeError + '\'' +
+                ", fixMsg='" + fixMsg + '\'' +
+                ", fechaInsercion=" + fechaInsercion +
+                '}';
+    }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="jpaFixClientPU">
+        <class>cencor.meif.fix.client.jpa.entities.Ack1Entity</class>
+        <class>cencor.meif.fix.client.jpa.entities.Ack2Entity</class>
+        <class>cencor.meif.fix.client.jpa.entities.CatEstatusEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.ErroresEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.NosEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.OcrEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.ErEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.OtrosMsjFixEntity</class>
+        <class>cencor.meif.fix.client.jpa.entities.ErEntity</class>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://meif-desa-mysql.c6apwbtypwpn.us-east-1.rds.amazonaws.com:3306/FixClientDB"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="portalmei"/>
+            <property name="javax.persistence.jdbc.password" value="portalmeipwd"/>
+
+            <property name="eclipselink.logging.logger" value="JavaLogger"/>
+            <property name="eclipselink.logging.level" value="FINE"/>
+            <property name="eclipselink.logging.level.sql" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.logging.timestamp" value="true"/>
+            <property name="eclipselink.logging.session" value="true"/>
+            <property name="eclipselink.logging.thread" value="true"/>
+            <property name="eclipselink.logging.exceptions" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

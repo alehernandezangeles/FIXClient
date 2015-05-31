@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by mhernandez on 5/29/15.
@@ -66,6 +67,15 @@ public class NOS {
             controller.create(nosEntity);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void findByStatus() {
+        NosEntityJpaController controller = new NosEntityJpaController(emf);
+        List<NosEntity> nosByEstatus = controller.findNosByEstatus(CatEstatusEntity.NUEVO);
+        for (NosEntity nosByEstatu : nosByEstatus) {
+            System.out.println(nosByEstatu);
         }
     }
 

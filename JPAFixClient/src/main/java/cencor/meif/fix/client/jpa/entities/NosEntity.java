@@ -426,4 +426,38 @@ public class NosEntity implements Serializable {
         result = 31 * result + (contratoOper != null ? contratoOper.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "NosEntity{" +
+                "id=" + id +
+                ", estatus=" + estatus +
+                ", account='" + account + '\'' +
+                ", clOrdId='" + clOrdId + '\'' +
+                ", currency='" + currency + '\'' +
+                ", securityIdSource='" + securityIdSource + '\'' +
+                ", ordType='" + ordType + '\'' +
+                ", price=" + price +
+                ", securityId='" + securityId + '\'' +
+                ", quantity=" + quantity +
+                ", side=" + side +
+                ", symbol='" + symbol + '\'' +
+                ", transactTime=" + transactTime +
+                ", settlType='" + settlType + '\'' +
+                ", settlDate=" + settlDate +
+                ", tradeDate=" + tradeDate +
+                ", allocQty=" + allocQty +
+                ", securityType='" + securityType + '\'' +
+                ", grossTradeAmt=" + grossTradeAmt +
+                ", numAsesorDist='" + numAsesorDist + '\'' +
+                ", porcentajeComisionDist=" + porcentajeComisionDist +
+                ", cveOperadora='" + cveOperadora + '\'' +
+                ", cveOrigen=" + cveOrigen +
+                ", importeSolicitado=" + importeSolicitado +
+                ", comision=" + comision +
+                ", iva=" + iva +
+                ", fechaSolicitud=" + fechaSolicitud +
+                ", contratoOper='" + contratoOper + '\'' +
+                '}';
+    }
 }

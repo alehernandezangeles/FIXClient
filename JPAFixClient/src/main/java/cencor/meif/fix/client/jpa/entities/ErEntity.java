@@ -327,4 +327,31 @@ public class ErEntity implements Serializable {
         result = 31 * result + (fechaHoraCapturaOper != null ? fechaHoraCapturaOper.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ErEntity{" +
+                "id=" + id +
+                ", estatus=" + estatus +
+                ", avgPrice=" + avgPrice +
+                ", clOrdId='" + clOrdId + '\'' +
+                ", cumQty=" + cumQty +
+                ", orderId='" + orderId + '\'' +
+                ", ordStatus='" + ordStatus + '\'' +
+                ", origClOrdId='" + origClOrdId + '\'' +
+                ", side='" + side + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", transactTime=" + transactTime +
+                ", execType='" + execType + '\'' +
+                ", netMoney=" + netMoney +
+                ", grossTradeAmt=" + grossTradeAmt +
+                ", porcentajeComisionDist=" + porcentajeComisionDist +
+                ", cveDistribuidoraOrig='" + cveDistribuidoraOrig + '\'' +
+                ", comision=" + comision +
+                ", iva=" + iva +
+                ", origFolioMei='" + origFolioMei + '\'' +
+                ", motivosRechazo='" + motivosRechazo + '\'' +
+                ", fechaHoraCapturaOper=" + fechaHoraCapturaOper +
+                '}';
+    }
 }

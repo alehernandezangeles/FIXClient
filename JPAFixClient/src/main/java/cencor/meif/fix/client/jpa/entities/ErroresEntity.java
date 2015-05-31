@@ -79,4 +79,14 @@ public class ErroresEntity implements Serializable {
         result = 31 * result + (fechaInsercion != null ? fechaInsercion.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ErroresEntity{" +
+                "id=" + id +
+                ", clOrdId='" + clOrdId + '\'' +
+                ", mensajeError='" + mensajeError + '\'' +
+                ", fechaInsercion=" + fechaInsercion +
+                '}';
+    }
 }

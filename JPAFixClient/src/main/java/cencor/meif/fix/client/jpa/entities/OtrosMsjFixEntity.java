@@ -79,4 +79,14 @@ public class OtrosMsjFixEntity implements Serializable {
         result = 31 * result + (fechaInsercion != null ? fechaInsercion.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "OtrosMsjFixEntity{" +
+                "id=" + id +
+                ", clOrdId='" + clOrdId + '\'' +
+                ", fixMsg='" + fixMsg + '\'' +
+                ", fechaInsercion=" + fechaInsercion +
+                '}';
+    }
 }
