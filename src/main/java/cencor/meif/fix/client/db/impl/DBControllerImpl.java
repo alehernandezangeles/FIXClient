@@ -2,6 +2,7 @@ package cencor.meif.fix.client.db.impl;
 
 import cencor.meif.fix.client.db.DBController;
 import cencor.meif.fix.client.jpa.controllers.NosEntityJpaController;
+import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import cencor.meif.fix.client.jpa.entities.NosEntity;
 
 import javax.persistence.EntityManagerFactory;
@@ -23,6 +24,7 @@ public class DBControllerImpl implements DBController {
 
     @Override
     public List<NosEntity> getNewNos() {
-        return null;
+        List<NosEntity> nosNewList = nosController.findNosByEstatus(CatEstatusEntity.NUEVO);
+        return nosNewList;
     }
 }

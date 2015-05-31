@@ -1,7 +1,10 @@
 .idea
+activemq-data
 target
 *.docx
 *.swp
 *.png
 *.graphml
 *.iml
+*.log
+*.log.*

@@ -1,35 +1,15 @@
 package cencor.meif.fix.client;
 
-import cencor.meif.fix.client.db.DBController;
-import cencor.meif.fix.client.db.impl.DBControllerImpl;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import javax.jms.JMSException;
 
 /**
- * Created by alejandro on 5/30/15.
+ * Created by alejandro on 5/31/15.
  */
-public class DBClient {
+public interface DBClient {
 
-    public static Properties fixClientProps = new Properties();
+    String BROKER_URL = "vm://localhost";
+    String REQ_QUEUE_NAME = "FIX.IN";
 
-    private DBController dbController;
-
-    public DBClient() {
-        dbController = new DBControllerImpl();
-    }
-
-    private void start() {
-
-    }
-
-    public static void main(String[] args) throws IOException {
-        fixClientProps.load(new FileInputStream("fixclient.properties"));
-
-        DBClient dbClient = new DBClient();
-        dbClient.start();
-    }
+    void start() throws JMSException;
 
 }
