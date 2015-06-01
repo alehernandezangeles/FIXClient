@@ -355,6 +355,7 @@ public class NosEntity implements Serializable {
         NosEntity nosEntity = (NosEntity) o;
 
         if (id != null ? !id.equals(nosEntity.id) : nosEntity.id != null) return false;
+        if (estatus != null ? !estatus.equals(nosEntity.estatus) : nosEntity.estatus != null) return false;
         if (account != null ? !account.equals(nosEntity.account) : nosEntity.account != null) return false;
         if (clOrdId != null ? !clOrdId.equals(nosEntity.clOrdId) : nosEntity.clOrdId != null) return false;
         if (currency != null ? !currency.equals(nosEntity.currency) : nosEntity.currency != null) return false;
@@ -398,6 +399,7 @@ public class NosEntity implements Serializable {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (estatus != null ? estatus.hashCode() : 0);
         result = 31 * result + (account != null ? account.hashCode() : 0);
         result = 31 * result + (clOrdId != null ? clOrdId.hashCode() : 0);
         result = 31 * result + (currency != null ? currency.hashCode() : 0);

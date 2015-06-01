@@ -1,7 +1,6 @@
 package cencor.meif.fix.client.jpa.controllers.test;
 
 import cencor.meif.fix.client.jpa.controllers.ErEntityJpaController;
-import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import cencor.meif.fix.client.jpa.entities.ErEntity;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -39,7 +38,6 @@ public class ER {
         erEntity.setComision(1.43);
         erEntity.setCumQty(12000000);
         erEntity.setCveDistribuidoraOrig("Dist1");
-        erEntity.setEstatus(CatEstatusEntity.ACK2);
         erEntity.setExecType("1");
         erEntity.setFechaHoraCapturaOper(new Timestamp(date.getTime()));
         erEntity.setGrossTradeAmt(127.48);

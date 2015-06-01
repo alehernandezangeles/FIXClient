@@ -1,7 +1,7 @@
 package cencor.meif.fix.client.jpa.entities;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -20,18 +20,6 @@ public class ErEntity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    private Integer estatus;
-
-    @Basic
-    @javax.persistence.Column(name = "Estatus")
-    public Integer getEstatus() {
-        return estatus;
-    }
-
-    public void setEstatus(Integer estatus) {
-        this.estatus = estatus;
     }
 
     private Double avgPrice;
@@ -270,7 +258,6 @@ public class ErEntity implements Serializable {
         ErEntity erEntity = (ErEntity) o;
 
         if (id != null ? !id.equals(erEntity.id) : erEntity.id != null) return false;
-        if (estatus != null ? !estatus.equals(erEntity.estatus) : erEntity.estatus != null) return false;
         if (avgPrice != null ? !avgPrice.equals(erEntity.avgPrice) : erEntity.avgPrice != null) return false;
         if (clOrdId != null ? !clOrdId.equals(erEntity.clOrdId) : erEntity.clOrdId != null) return false;
         if (cumQty != null ? !cumQty.equals(erEntity.cumQty) : erEntity.cumQty != null) return false;
@@ -305,7 +292,6 @@ public class ErEntity implements Serializable {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (estatus != null ? estatus.hashCode() : 0);
         result = 31 * result + (avgPrice != null ? avgPrice.hashCode() : 0);
         result = 31 * result + (clOrdId != null ? clOrdId.hashCode() : 0);
         result = 31 * result + (cumQty != null ? cumQty.hashCode() : 0);
@@ -332,7 +318,6 @@ public class ErEntity implements Serializable {
     public String toString() {
         return "ErEntity{" +
                 "id=" + id +
-                ", estatus=" + estatus +
                 ", avgPrice=" + avgPrice +
                 ", clOrdId='" + clOrdId + '\'' +
                 ", cumQty=" + cumQty +

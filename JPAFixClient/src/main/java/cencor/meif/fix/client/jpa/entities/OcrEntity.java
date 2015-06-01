@@ -1,9 +1,9 @@
 package cencor.meif.fix.client.jpa.entities;
 
-import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -22,6 +22,18 @@ public class OcrEntity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    private Integer estatus;
+
+    @Basic
+    @javax.persistence.Column(name = "Estatus")
+    public Integer getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(Integer estatus) {
+        this.estatus = estatus;
     }
 
     private Double avgPrice;
@@ -260,6 +272,7 @@ public class OcrEntity implements Serializable {
         OcrEntity ocrEntity = (OcrEntity) o;
 
         if (id != null ? !id.equals(ocrEntity.id) : ocrEntity.id != null) return false;
+        if (estatus != null ? !estatus.equals(ocrEntity.estatus) : ocrEntity.estatus != null) return false;
         if (avgPrice != null ? !avgPrice.equals(ocrEntity.avgPrice) : ocrEntity.avgPrice != null) return false;
         if (clOrdId != null ? !clOrdId.equals(ocrEntity.clOrdId) : ocrEntity.clOrdId != null) return false;
         if (cumQty != null ? !cumQty.equals(ocrEntity.cumQty) : ocrEntity.cumQty != null) return false;
@@ -294,6 +307,7 @@ public class OcrEntity implements Serializable {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (estatus != null ? estatus.hashCode() : 0);
         result = 31 * result + (avgPrice != null ? avgPrice.hashCode() : 0);
         result = 31 * result + (clOrdId != null ? clOrdId.hashCode() : 0);
         result = 31 * result + (cumQty != null ? cumQty.hashCode() : 0);
@@ -320,6 +334,7 @@ public class OcrEntity implements Serializable {
     public String toString() {
         return "OcrEntity{" +
                 "id=" + id +
+                ", estatus=" + estatus +
                 ", avgPrice=" + avgPrice +
                 ", clOrdId='" + clOrdId + '\'' +
                 ", cumQty=" + cumQty +

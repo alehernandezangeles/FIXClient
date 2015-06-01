@@ -5,6 +5,7 @@ target
 *.swp
 *.png
 *.graphml
+*.gml
 *.iml
 *.log
 *.log.*
