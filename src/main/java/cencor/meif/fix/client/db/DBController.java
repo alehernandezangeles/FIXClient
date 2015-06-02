@@ -11,4 +11,6 @@ public interface DBController {
 
     List<NosEntity> getNewNos();
 
+    void editNos(NosEntity nosEntity) throws Exception;
+
 }

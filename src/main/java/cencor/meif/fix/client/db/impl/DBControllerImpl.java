@@ -27,4 +27,9 @@ public class DBControllerImpl implements DBController {
         List<NosEntity> nosNewList = nosController.findNosByEstatus(CatEstatusEntity.NUEVO);
         return nosNewList;
     }
+
+    @Override
+    public void editNos(NosEntity nosEntity) throws Exception {
+        nosController.edit(nosEntity);
+    }
 }

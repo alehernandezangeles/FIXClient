@@ -7,7 +7,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.Date;
@@ -35,7 +34,7 @@ public class NOS {
 
         NosEntityJpaController controller = new NosEntityJpaController(emf);
         NosEntity nosEntity = new NosEntity();
-        nosEntity.setEstatus(CatEstatusEntity.ACK1);
+        nosEntity.setEstatus(CatEstatusEntity.NUEVO);
         nosEntity.setAccount("Account");
         nosEntity.setAllocQty(12000);
         nosEntity.setClOrdId("Id" + date.getTime());
@@ -58,7 +57,7 @@ public class NOS {
         nosEntity.setSecurityType("TV");
         nosEntity.setSettlDate(new java.sql.Date(date.getTime()));
         nosEntity.setSettlType("0");
-        nosEntity.setSide(1l);
+        nosEntity.setSide("1");
         nosEntity.setSymbol("EMI|SERIE");
         nosEntity.setTradeDate(new java.sql.Date(date.getTime()));
         nosEntity.setTransactTime(new java.sql.Timestamp(date.getTime()));

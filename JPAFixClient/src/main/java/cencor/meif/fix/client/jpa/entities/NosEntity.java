@@ -131,15 +131,15 @@ public class NosEntity implements Serializable {
         this.quantity = quantity;
     }
 
-    private Long side;
+    private String side;
 
     @Basic
     @javax.persistence.Column(name = "Side")
-    public Long getSide() {
+    public String getSide() {
         return side;
     }
 
-    public void setSide(Long side) {
+    public void setSide(String side) {
         this.side = side;
     }
 

@@ -1,8 +1,7 @@
 package cencor.meif.fix.client.queue.impl;
 
-import cencor.meif.fix.client.DBClient;
+import cencor.meif.fix.client.FixClientSvcImpl;
 import cencor.meif.fix.client.queue.ProducerController;
-import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 import java.io.Serializable;
@@ -21,7 +20,7 @@ public class ProducerControllerImpl implements ProducerController {
         this.connection = brokerConn;
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        this.destination = session.createQueue(DBClient.REQ_QUEUE_NAME);
+        this.destination = session.createQueue(FixClientSvcImpl.REQ_QUEUE_NAME);
         this.producer = session.createProducer(destination);
 
     }

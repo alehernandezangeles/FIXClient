@@ -1,7 +1,7 @@
 package cencor.meif.fix.client.jpa.entities;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -12,10 +12,12 @@ import java.sql.Timestamp;
 public class CatEstatusEntity implements Serializable {
 
     public static final int NUEVO = 1;
-    public static final int ACK1 = 2;
-    public static final int ACK2 = 3;
-    public static final int ER = 4;
-    public static final int ERROR = 5;
+    public static final int POR_ENVIAR_A_MEIF = 2;
+    public static final int ENVIADO_A_MEIF = 3;
+    public static final int ACK1 = 4;
+    public static final int ACK2 = 5;
+    public static final int ER = 6;
+    public static final int ERROR = 7;
 
     private Integer id;
     private String descripcion;
