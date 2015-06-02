@@ -58,7 +58,7 @@ public class FixClientSvcImpl implements Service {
         brokerConn = brokerCF.createConnection();
         brokerConn.start();
         producerController = new ProducerControllerImpl(brokerConn);
-        consumerController = new ConsumerControllerImpl(brokerConn);
+        consumerController = new ConsumerControllerImpl(brokerConn, fixApp, dbController);
 
         newMsgObserver = new NewMsgObserver(dbController, producerController);
     }
@@ -85,11 +85,12 @@ public class FixClientSvcImpl implements Service {
         } catch (ConfigError configError) {
             loggger.error("Error al conectarse con el servidor FIX", configError);
         }
+        // start listening for new messages in queue
+        consumerController.start();
+
         // start observing for new orders
         newMsgObserver.start();
 
-        // start listening for new messages in queue
-        consumerController.start();
     }
 
     public static void main(String[] args) throws IOException, JMSException, ConfigError {

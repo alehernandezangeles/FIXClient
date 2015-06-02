@@ -1,10 +1,13 @@
 package cencor.meif.fix.client.queue.impl;
 
 import cencor.meif.fix.client.*;
+import cencor.meif.fix.client.db.DBController;
+import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import cencor.meif.fix.client.jpa.entities.NosEntity;
 import cencor.meif.fix.client.jpa.entities.OcrEntity;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.log4j.Logger;
+import quickfix.SessionID;
 import quickfix.SessionNotFound;
 
 import javax.jms.*;
@@ -24,8 +27,12 @@ public class ConsumerControllerImpl implements Service {
     private OCRAdapter ocrAdapter;
 
     private MessageListener messageListener;
+    private FixApp fixApp;
+    private DBController dbController;
 
-    public ConsumerControllerImpl(Connection brokerConn) throws JMSException {
+    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController) throws JMSException {
+        this.fixApp = fixApp;
+        this.dbController = dbController;
         this.nosAdapter = new NOSAdapterImpl();
         this.ocrAdapter = new OCRAdapterImpl();
 
@@ -49,7 +56,6 @@ public class ConsumerControllerImpl implements Service {
                     } catch (JMSException e) {
                         logger.error("Error retrieving message from queue " + FixClientSvcImpl.REQ_QUEUE_NAME, e);
                     }
-                    System.out.println("onMessage: " + entity);
                     if (entity != null) {
                         if (entity instanceof NosEntity) {
                             NosEntity nosEntity = (NosEntity) entity;
@@ -61,7 +67,20 @@ public class ConsumerControllerImpl implements Service {
                     }
                     if (fixMessage != null) {
                         try {
-                            quickfix.Session.sendToTarget(fixMessage);
+                            SessionID sessionID = fixApp.getSessionID();
+                            quickfix.Session.sendToTarget(fixMessage, sessionID);
+
+                            if (entity instanceof NosEntity) {
+                                NosEntity nosEntity = (NosEntity) entity;
+                                nosEntity.setEstatus(CatEstatusEntity.ENVIADO_A_MEIF);
+                                try {
+                                    dbController.editNos(nosEntity);
+                                } catch (Exception e) {
+                                    logger.error("Error al pesistir en BD: " + entity, e);
+                                }
+                            } else if (entity instanceof OcrEntity) {
+                                // TODO Implementar
+                            }
                         } catch (SessionNotFound sessionNotFound) {
                             logger.error("Error al enviar mensaje fix: " + fixMessage, sessionNotFound);
                         }
