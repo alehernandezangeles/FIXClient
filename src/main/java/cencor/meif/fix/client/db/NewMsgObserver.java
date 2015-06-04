@@ -47,7 +47,7 @@ public class NewMsgObserver implements Observer, Service {
         for (Serializable entity : entities) {
             try {
                 // enviar a la cola de nuevas peticiones
-                producerController.put(entity);
+                producerController.putReq(entity);
                 // cambiar el estatus de la orden a "Por enviar a MEIF"
                 if (entity instanceof NosEntity) {
                     NosEntity nosEntity = (NosEntity) entity;

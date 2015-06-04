@@ -10,6 +10,7 @@ public interface ProducerController {
 
     String BROKER_URL = "vm://FIX_BROKER";
 
-    void put(Serializable obj) throws JMSException;
+    void putReq(Serializable obj) throws JMSException;
+    void putResp(quickfix.Message fixMsg) throws JMSException;
 
 }
