@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import quickfix.CharField;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
+import quickfix.field.ClOrdID;
 import quickfix.field.OrdStatus;
 import quickfix.fix44.ExecutionReport;
 
@@ -91,27 +92,43 @@ public class ConsumerControllerImpl implements Service {
                     if (fixMessage instanceof ExecutionReport) {
                         ExecutionReport er = (ExecutionReport) fixMessage;
                         CharField ordStatus = fixUtils.get(fixMessage, new OrdStatus());
+                        String clOrdId = fixUtils.get(fixMessage, new ClOrdID()).getValue();
                         if (ordStatus != null) {
-                            if (ordStatus.getValue() == OrdStatus.PENDING_NEW) {
+                            if (ordStatus.getValue() == OrdStatus.PENDING_NEW) { // ACK1
                                 Ack1Entity ack1Entity = ConsumerControllerImpl.this.ack1Adapter.adapt(er);
                                 try {
                                     dbController.createAck1(ack1Entity);
                                 } catch (Exception e) {
                                     logger.error("Error al pesistir en BD: " + ack1Entity, e);
                                 }
-                            } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) {
+                                try {
+                                    dbController.editStatus(clOrdId, CatEstatusEntity.ACK1);
+                                } catch (Exception e) {
+                                    logger.error("Error al cambiar el estatus de la orden " + clOrdId + " a ACK1", e);
+                                }
+                            } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) { // ACK2
                                 Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
                                 try {
                                     dbController.createAck2(ack2Entity);
                                 } catch (Exception e) {
                                     logger.error("Error al pesistir en BD: " + ack2Entity, e);
                                 }
-                            } else if (ordStatus.getValue() == OrdStatus.NEW) {
+                                try {
+                                    dbController.editStatus(clOrdId, CatEstatusEntity.ACK2);
+                                } catch (Exception e) {
+                                    logger.error("Error al cambiar el estatus de la orden " + clOrdId + " a ACK2", e);
+                                }
+                            } else if (ordStatus.getValue() == OrdStatus.NEW) { // ER
                                 ErEntity erEntity = erAdapter.adapt(er);
                                 try {
                                     dbController.createEr(erEntity);
                                 } catch (Exception e) {
                                     logger.error("Error al pesistir en BD: " + erEntity, e);
+                                }
+                                try {
+                                    dbController.editStatus(clOrdId, CatEstatusEntity.ER);
+                                } catch (Exception e) {
+                                    logger.error("Error al cambiar el estatus de la orden " + clOrdId + " a ER", e);
                                 }
                             }
                         }

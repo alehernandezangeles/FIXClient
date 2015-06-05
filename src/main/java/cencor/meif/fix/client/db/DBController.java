@@ -14,8 +14,10 @@ public interface DBController {
     List<OcrEntity> getNewOcr();
 
     void editNos(NosEntity nosEntity) throws Exception;
+    NosEntity findNosByClOrdId(String clOrdId);
 
     void editOcr(OcrEntity ocrEntity) throws Exception;
+    OcrEntity findOcrByClOrdId(String clOrdId);
 
     void createOtrosMsjFix(OtrosMsjFixEntity otrosMsjFixEntity) throws Exception;
 
@@ -24,4 +26,6 @@ public interface DBController {
     void createAck2(Ack2Entity ack2Entity) throws Exception;
 
     void createEr(ErEntity erEntity);
+
+    void editStatus(String clOrdId, int estatus) throws Exception;
 }

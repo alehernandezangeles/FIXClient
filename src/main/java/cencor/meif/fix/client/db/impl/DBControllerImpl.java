@@ -5,6 +5,7 @@ import cencor.meif.fix.client.jpa.controllers.*;
 import cencor.meif.fix.client.jpa.entities.*;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import java.util.List;
 
@@ -49,8 +50,20 @@ public class DBControllerImpl implements DBController {
     }
 
     @Override
+    public NosEntity findNosByClOrdId(String clOrdId) {
+        NosEntity nosEntity = nosController.findNosByClOrdId(clOrdId);
+        return nosEntity;
+    }
+
+    @Override
     public void editOcr(OcrEntity ocrEntity) throws Exception {
         ocrControlleer.edit(ocrEntity);
+    }
+
+    @Override
+    public OcrEntity findOcrByClOrdId(String clOrdId) {
+        OcrEntity ocrEntity = ocrControlleer.findOcrByClOrdId(clOrdId);
+        return ocrEntity;
     }
 
     @Override
@@ -71,5 +84,36 @@ public class DBControllerImpl implements DBController {
     @Override
     public void createEr(ErEntity erEntity) {
         erController.create(erEntity);
+    }
+
+    @Override
+    public void editStatus(String clOrdId, int estatus) throws Exception {
+        int rowsUpdated = 0;
+        NosEntity nosEntity = null;
+        OcrEntity ocrEntity = null;
+
+        // Busca en la tabla NOS
+        try {
+            nosEntity = nosController.findNosByClOrdId(clOrdId);
+            nosEntity.setEstatus(estatus);
+        } catch (NoResultException e) {
+        }
+
+        // Si no está en la tabla NOS busca en OCR
+        if (nosEntity == null) {
+            try {
+                ocrEntity = ocrControlleer.findOcrByClOrdId(clOrdId);
+                ocrEntity.setEstatus(estatus);
+            } catch (NoResultException e) {
+            }
+        }
+
+        if (nosEntity != null) {
+            editNos(nosEntity);
+        } else if (ocrEntity != null) {
+            editOcr(ocrEntity);
+        } else {
+            throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tablas NOS y OCR.");
+        }
     }
 }
