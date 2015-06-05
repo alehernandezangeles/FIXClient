@@ -150,7 +150,13 @@ public class ConsumerControllerImpl implements Service {
                             logger.error("Error al pesistir en BD: " + entity, e);
                         }
                     } else if (entity instanceof OcrEntity) {
-                        // TODO Implementar
+                        OcrEntity ocrEntity = (OcrEntity) entity;
+                        ocrEntity.setEstatus(CatEstatusEntity.ENVIADO_A_MEIF);
+                        try {
+                            dbController.editOcr(ocrEntity);
+                        } catch (Exception e) {
+                            logger.error("Error al pesistir en BD: " + entity, e);
+                        }
                     }
                 } catch (SessionNotFound sessionNotFound) {
                     logger.error("Error al enviar mensaje fix: " + fixMessage, sessionNotFound);

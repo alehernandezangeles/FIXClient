@@ -44,24 +44,24 @@ public class ERAdapterImpl implements ERAdapter {
         UtcTimeStampField fecHoraCaptOper = fixUtils.get(er, new UtcTimeStampField(CustomTags.FECHA_HORA_CAPTURA_OPER));
 
         ErEntity erEntity = new ErEntity();
-        erEntity.setAvgPrice(avgPx.getValue());
+        if (avgPx != null) { erEntity.setAvgPrice(avgPx.getValue()); }
         erEntity.setClOrdId(clOrdId.getValue());
-        erEntity.setComision(comision.getValue());
+        if (comision != null) { erEntity.setComision(comision.getValue()); }
         erEntity.setCumQty((int) cumQty.getValue());
         erEntity.setCveDistribuidoraOrig(cveDistOrig.getValue());
         erEntity.setExecType(execType.getValue() + "");
         if (fecHoraCaptOper != null) { erEntity.setFechaHoraCapturaOper(new Timestamp(fecHoraCaptOper.getValue().getTime())); }
-        erEntity.setGrossTradeAmt(grossTradeAmt.getValue());
+        if (grossTradeAmt != null) { erEntity.setGrossTradeAmt(grossTradeAmt.getValue()); }
         if (iva != null) { erEntity.setIva(iva.getValue()); }
         if (motivoRechazo != null) { erEntity.setMotivosRechazo(motivoRechazo.getValue()); }
-        erEntity.setNetMoney(netMoney.getValue());
-        erEntity.setOrderId(orderId.getValue());
+        if (netMoney != null) { erEntity.setNetMoney(netMoney.getValue()); }
+        if (orderId != null) { erEntity.setOrderId(orderId.getValue()); }
         erEntity.setOrdStatus(ordStatus.getValue() + "");
         if (origClOrdID != null) { erEntity.setOrigClOrdId(origClOrdID.getValue()); }
         if (origFolioMEI != null) { erEntity.setOrigFolioMei(origFolioMEI.getValue()); }
-        erEntity.setPorcentajeComisionDist(pctComisDist.getValue());
+        if (pctComisDist != null) { erEntity.setPorcentajeComisionDist(pctComisDist.getValue()); }
         erEntity.setSide(side.getValue() + "");
-        erEntity.setSymbol(symbol.getValue());
+        if (symbol != null) { erEntity.setSymbol(symbol.getValue()); }
         erEntity.setTransactTime(new Timestamp(transactTime.getValue().getTime()));
 
         return erEntity;

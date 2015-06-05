@@ -8,14 +8,13 @@ package cencor.meif.fix.client.jpa.controllers;
 import cencor.meif.fix.client.jpa.controllers.exceptions.NonexistentEntityException;
 import cencor.meif.fix.client.jpa.controllers.exceptions.PreexistingEntityException;
 import cencor.meif.fix.client.jpa.entities.OcrEntity;
-import java.io.Serializable;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
+
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -113,6 +112,22 @@ public class OcrEntityJpaController implements Serializable {
                 q.setMaxResults(maxResults);
                 q.setFirstResult(firstResult);
             }
+            return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<OcrEntity> findOcrByEstatus(int estatus) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<OcrEntity> query = cb.createQuery(OcrEntity.class);
+            Root<OcrEntity> ocr = query.from(OcrEntity.class);
+            query.select(ocr)
+                    .where(cb.equal(ocr.get("estatus"), estatus));
+            TypedQuery<OcrEntity> q = em.createQuery(query);
+
             return q.getResultList();
         } finally {
             em.close();

@@ -32,12 +32,13 @@ public class OCR {
     @Test
     public void insert() {
         Date date = new Date();
+        String orderId = "MEI1723164541519219389691194";
 
         OcrEntity ocrEntity = new OcrEntity();
         ocrEntity.setClOrdId(date.getTime() + "");
-        ocrEntity.setEstatus(CatEstatusEntity.ER);
+        ocrEntity.setEstatus(CatEstatusEntity.NUEVO);
         ocrEntity.setCveOperadora("Oper2");
-        ocrEntity.setOrderId("MEI" + date.getTime());
+        ocrEntity.setOrderId(orderId);
         ocrEntity.setOrigClOrdId(date.getTime() + "");
         ocrEntity.setSide("1");
         ocrEntity.setTransactTime(new Timestamp(date.getTime()));

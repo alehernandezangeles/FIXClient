@@ -33,8 +33,7 @@ public class NewMsgObservable extends Observable implements Service {
         while (true) {
             // Busca órdenes nuevas en la BD
             List<NosEntity> nosEntities = dbController.getNewNos();
-            // TODO Consultar OCR
-            List<OcrEntity> ocrEntities = null;
+            List<OcrEntity> ocrEntities = dbController.getNewOcr();
 
             List<Serializable> entities = new ArrayList<>();
             if (nosEntities != null) { entities.addAll(nosEntities); }

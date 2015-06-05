@@ -15,6 +15,7 @@ public class DBControllerImpl implements DBController {
 
     private EntityManagerFactory emf;
     private NosEntityJpaController nosController;
+    private OcrEntityJpaController ocrControlleer;
     private OtrosMsjFixEntityJpaController otrosController;
     private Ack1EntityJpaController ack1Controller;
     private Ack2EntityJpaController ack2Controller;
@@ -23,6 +24,7 @@ public class DBControllerImpl implements DBController {
     public DBControllerImpl() {
         emf = Persistence.createEntityManagerFactory("jpaFixClientPU");
         nosController = new NosEntityJpaController(emf);
+        ocrControlleer = new OcrEntityJpaController(emf);
         otrosController = new OtrosMsjFixEntityJpaController(emf);
         ack1Controller = new Ack1EntityJpaController(emf);
         ack2Controller = new Ack2EntityJpaController(emf);
@@ -36,8 +38,19 @@ public class DBControllerImpl implements DBController {
     }
 
     @Override
+    public List<OcrEntity> getNewOcr() {
+        List<OcrEntity> ocrNewList = ocrControlleer.findOcrByEstatus(CatEstatusEntity.NUEVO);
+        return ocrNewList;
+    }
+
+    @Override
     public void editNos(NosEntity nosEntity) throws Exception {
         nosController.edit(nosEntity);
+    }
+
+    @Override
+    public void editOcr(OcrEntity ocrEntity) throws Exception {
+        ocrControlleer.edit(ocrEntity);
     }
 
     @Override

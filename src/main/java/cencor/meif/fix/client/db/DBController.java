@@ -11,7 +11,11 @@ public interface DBController {
 
     List<NosEntity> getNewNos();
 
+    List<OcrEntity> getNewOcr();
+
     void editNos(NosEntity nosEntity) throws Exception;
+
+    void editOcr(OcrEntity ocrEntity) throws Exception;
 
     void createOtrosMsjFix(OtrosMsjFixEntity otrosMsjFixEntity) throws Exception;
 
