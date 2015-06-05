@@ -134,6 +134,22 @@ public class OcrEntityJpaController implements Serializable {
         }
     }
 
+    public OcrEntity findOcrByClOrdId(String clOrdId) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<OcrEntity> query = cb.createQuery(OcrEntity.class);
+            Root<OcrEntity> nos = query.from(OcrEntity.class);
+            query.select(nos)
+                    .where(cb.equal(nos.get("clOrdId"), clOrdId));
+            TypedQuery<OcrEntity> q = em.createQuery(query);
+
+            return q.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
     public OcrEntity findOcrEntity(Long id) {
         EntityManager em = getEntityManager();
         try {

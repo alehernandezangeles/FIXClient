@@ -8,12 +8,13 @@ package cencor.meif.fix.client.jpa.controllers;
 import cencor.meif.fix.client.jpa.controllers.exceptions.NonexistentEntityException;
 import cencor.meif.fix.client.jpa.controllers.exceptions.PreexistingEntityException;
 import cencor.meif.fix.client.jpa.entities.NosEntity;
-import java.io.Serializable;
-import java.util.List;
+
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  *
@@ -128,6 +129,22 @@ public class NosEntityJpaController implements Serializable {
             TypedQuery<NosEntity> q = em.createQuery(query);
 
             return q.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public NosEntity findNosByClOrdId(String clOrdId) {
+        EntityManager em = getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<NosEntity> query = cb.createQuery(NosEntity.class);
+            Root<NosEntity> nos = query.from(NosEntity.class);
+            query.select(nos)
+                    .where(cb.equal(nos.get("clOrdId"), clOrdId));
+            TypedQuery<NosEntity> q = em.createQuery(query);
+
+            return q.getSingleResult();
         } finally {
             em.close();
         }

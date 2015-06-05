@@ -41,7 +41,7 @@ public class NOS {
         nosEntity.setComision(1.5);
         nosEntity.setContratoOper("ContratoOper");
         nosEntity.setCurrency("MXN");
-        nosEntity.setCveOperadora("OPBBVAG");
+        nosEntity.setCveOperadora("Oper2");
         nosEntity.setCveOrigen(1);
         nosEntity.setFechaSolicitud(new java.sql.Date(date.getTime()));
         nosEntity.setGrossTradeAmt(1212.12);
@@ -58,7 +58,7 @@ public class NOS {
         nosEntity.setSettlDate(new java.sql.Date(date.getTime()));
         nosEntity.setSettlType("0");
         nosEntity.setSide("1");
-        nosEntity.setSymbol("BMERGOB|DF");
+        nosEntity.setSymbol("EMINHC|BB");
         nosEntity.setTradeDate(new java.sql.Date(date.getTime()));
         nosEntity.setTransactTime(new java.sql.Timestamp(date.getTime()));
 
