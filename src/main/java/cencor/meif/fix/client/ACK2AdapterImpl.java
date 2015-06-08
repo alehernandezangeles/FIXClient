@@ -38,9 +38,9 @@ public class ACK2AdapterImpl implements ACK2Adapter {
 
         Long valido = -1l;
         CharField ordStatus = fixUtils.get(er, new OrdStatus());
-        if (ordStatus.equals(OrdStatus.FILLED)) {
+        if (ordStatus.getValue() == OrdStatus.FILLED) {
             valido = 1l;
-        } else if (ordStatus.equals(OrdStatus.REJECTED)) {
+        } else if (ordStatus.getValue() == OrdStatus.REJECTED) {
             valido = 0l;
         }
         ack2Entity.setValido(valido);

@@ -88,32 +88,60 @@ public class DBControllerImpl implements DBController {
 
     @Override
     public void editStatus(String clOrdId, int estatus) throws Exception {
-        int rowsUpdated = 0;
-        NosEntity nosEntity = null;
-        OcrEntity ocrEntity = null;
+        Object entity = findOrderByClOrdId(clOrdId);
+        if (entity instanceof NosEntity) {
+            NosEntity nosEntity = (NosEntity) entity;
+            nosEntity.setEstatus(estatus);
+            editNos(nosEntity);
+        } else if (entity instanceof OcrEntity) {
+            OcrEntity ocrEntity = (OcrEntity) entity;
+            ocrEntity.setEstatus(estatus);
+            editOcr(ocrEntity);
+        }
+    }
+
+    @Override
+    public void editStatus(String clOrdId, int estatus, Integer estatusAck2, String mensajeEstatusAck2) throws Exception {
+        Object entity = findOrderByClOrdId(clOrdId);
+        if (entity instanceof NosEntity) {
+            NosEntity nosEntity = (NosEntity) entity;
+            nosEntity.setEstatus(estatus);
+            nosEntity.setEstatusAck2(estatusAck2);
+            nosEntity.setMensajeEstatusAck2(mensajeEstatusAck2);
+
+            editNos(nosEntity);
+        } else if (entity instanceof OcrEntity) {
+            OcrEntity ocrEntity = (OcrEntity) entity;
+            ocrEntity.setEstatus(estatus);
+            ocrEntity.setEstatusAck2(estatusAck2);
+            ocrEntity.setMensajeEstatusAck2(mensajeEstatusAck2);
+
+            editOcr(ocrEntity);
+        }
+    }
+
+    @Override
+    public Object findOrderByClOrdId(String clOrdId) {
+        Object entity = null;
 
         // Busca en la tabla NOS
         try {
-            nosEntity = nosController.findNosByClOrdId(clOrdId);
-            nosEntity.setEstatus(estatus);
+            entity = nosController.findNosByClOrdId(clOrdId);
         } catch (NoResultException e) {
         }
 
         // Si no está en la tabla NOS busca en OCR
-        if (nosEntity == null) {
+        if (entity == null) {
             try {
-                ocrEntity = ocrControlleer.findOcrByClOrdId(clOrdId);
-                ocrEntity.setEstatus(estatus);
+                entity = ocrControlleer.findOcrByClOrdId(clOrdId);
             } catch (NoResultException e) {
             }
         }
 
-        if (nosEntity != null) {
-            editNos(nosEntity);
-        } else if (ocrEntity != null) {
-            editOcr(ocrEntity);
-        } else {
+        if (entity == null) {
             throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tablas NOS y OCR.");
         }
+
+        return entity;
     }
 }

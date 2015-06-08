@@ -28,4 +28,8 @@ public interface DBController {
     void createEr(ErEntity erEntity);
 
     void editStatus(String clOrdId, int estatus) throws Exception;
+
+    void editStatus(String clOrdId, int estatus, Integer estatusAck2, String mensajeEstatusAck2) throws Exception;
+
+    Object findOrderByClOrdId(String clOrdId);
 }
