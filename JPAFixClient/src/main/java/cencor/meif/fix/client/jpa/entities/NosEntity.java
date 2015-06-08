@@ -347,6 +347,54 @@ public class NosEntity implements Serializable {
         this.contratoOper = contratoOper;
     }
 
+    private Double netMoney;
+
+    @Basic
+    @Column(name = "NetMoney")
+    public Double getNetMoney() {
+        return netMoney;
+    }
+
+    public void setNetMoney(Double netMoney) {
+        this.netMoney = netMoney;
+    }
+
+    private String adicional1;
+
+    @Basic
+    @Column(name = "Adicional1")
+    public String getAdicional1() {
+        return adicional1;
+    }
+
+    public void setAdicional1(String adicional1) {
+        this.adicional1 = adicional1;
+    }
+
+    private String adicional2;
+
+    @Basic
+    @Column(name = "Adicional2")
+    public String getAdicional2() {
+        return adicional2;
+    }
+
+    public void setAdicional2(String adicional2) {
+        this.adicional2 = adicional2;
+    }
+
+    private String adicional3;
+
+    @Basic
+    @Column(name = "Adicional3")
+    public String getAdicional3() {
+        return adicional3;
+    }
+
+    public void setAdicional3(String adicional3) {
+        this.adicional3 = adicional3;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -442,7 +490,7 @@ public class NosEntity implements Serializable {
                 ", price=" + price +
                 ", securityId='" + securityId + '\'' +
                 ", quantity=" + quantity +
-                ", side=" + side +
+                ", side='" + side + '\'' +
                 ", symbol='" + symbol + '\'' +
                 ", transactTime=" + transactTime +
                 ", settlType='" + settlType + '\'' +
@@ -460,6 +508,10 @@ public class NosEntity implements Serializable {
                 ", iva=" + iva +
                 ", fechaSolicitud=" + fechaSolicitud +
                 ", contratoOper='" + contratoOper + '\'' +
+                ", netMoney=" + netMoney +
+                ", adicional1='" + adicional1 + '\'' +
+                ", adicional2='" + adicional2 + '\'' +
+                ", adicional3='" + adicional3 + '\'' +
                 '}';
     }
 }

@@ -61,6 +61,10 @@ public class NOS {
         nosEntity.setSymbol("EMINHC|BB");
         nosEntity.setTradeDate(new java.sql.Date(date.getTime()));
         nosEntity.setTransactTime(new java.sql.Timestamp(date.getTime()));
+        nosEntity.setNetMoney(84.92);
+        nosEntity.setAdicional1("Adicional 1");
+        nosEntity.setAdicional2("Adicional 2");
+        nosEntity.setAdicional3("Adicional 3");
 
         try {
             controller.create(nosEntity);
