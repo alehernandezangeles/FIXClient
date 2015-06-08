@@ -88,7 +88,6 @@ public class DBControllerImpl implements DBController {
 
     @Override
     public void editStatus(String clOrdId, int estatus) throws Exception {
-        int rowsUpdated = 0;
         NosEntity nosEntity = null;
         OcrEntity ocrEntity = null;
 
@@ -115,5 +114,40 @@ public class DBControllerImpl implements DBController {
         } else {
             throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tablas NOS y OCR.");
         }
+    }
+
+    @Override
+    public void editStatus(String clOrdId, int estatus, int estatusAck2, String descrAck2) throws Exception {
+        NosEntity nosEntity = null;
+        OcrEntity ocrEntity = null;
+
+        // Busca en la tabla NOS
+        try {
+            nosEntity = nosController.findNosByClOrdId(clOrdId);
+            nosEntity.setEstatus(estatus);
+            nosEntity.setEstatusAck2(estatusAck2);
+            nosEntity.setMensajeEstatusAck2(descrAck2);
+        } catch (NoResultException e) {
+        }
+
+        // Si no está en la tabla NOS busca en OCR
+        if (nosEntity == null) {
+            try {
+                ocrEntity = ocrControlleer.findOcrByClOrdId(clOrdId);
+                ocrEntity.setEstatus(estatus);
+                ocrEntity.setEstatusAck2(estatusAck2);
+                ocrEntity.setMensajeEstatusAck2(descrAck2);
+            } catch (NoResultException e) {
+            }
+        }
+
+        if (nosEntity != null) {
+            editNos(nosEntity);
+        } else if (ocrEntity != null) {
+            editOcr(ocrEntity);
+        } else {
+            throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tablas NOS y OCR.");
+        }
+
     }
 }

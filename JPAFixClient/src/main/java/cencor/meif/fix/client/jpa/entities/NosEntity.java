@@ -35,6 +35,30 @@ public class NosEntity implements Serializable {
         this.estatus = estatus;
     }
 
+    private Integer estatusAck2;
+
+    @Basic
+    @Column(name = "EstatusAck2")
+    public Integer getEstatusAck2() {
+        return estatusAck2;
+    }
+
+    public void setEstatusAck2(Integer estatusAck2) {
+        this.estatusAck2 = estatusAck2;
+    }
+
+    private String mensajeEstatusAck2;
+
+    @Basic
+    @Column(name = "MensajeEstatusAck2")
+    public String getMensajeEstatusAck2() {
+        return mensajeEstatusAck2;
+    }
+
+    public void setMensajeEstatusAck2(String mensajeEstatusAck2) {
+        this.mensajeEstatusAck2 = mensajeEstatusAck2;
+    }
+
     private String account;
 
     @Basic
@@ -482,6 +506,8 @@ public class NosEntity implements Serializable {
         return "NosEntity{" +
                 "id=" + id +
                 ", estatus=" + estatus +
+                ", estatusAck2=" + estatusAck2 +
+                ", mensajeEstatusAck2='" + mensajeEstatusAck2 + '\'' +
                 ", account='" + account + '\'' +
                 ", clOrdId='" + clOrdId + '\'' +
                 ", currency='" + currency + '\'' +

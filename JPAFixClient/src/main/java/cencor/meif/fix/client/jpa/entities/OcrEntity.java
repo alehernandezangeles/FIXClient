@@ -1,6 +1,7 @@
 package cencor.meif.fix.client.jpa.entities;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -34,6 +35,30 @@ public class OcrEntity implements Serializable {
 
     public void setEstatus(Integer estatus) {
         this.estatus = estatus;
+    }
+
+    private Integer estatusAck2;
+
+    @Basic
+    @Column(name = "EstatusAck2")
+    public Integer getEstatusAck2() {
+        return estatusAck2;
+    }
+
+    public void setEstatusAck2(Integer estatusAck2) {
+        this.estatusAck2 = estatusAck2;
+    }
+
+    private String mensajeEstatusAck2;
+
+    @Basic
+    @Column(name = "MensajeEstatusAck2")
+    public String getMensajeEstatusAck2() {
+        return mensajeEstatusAck2;
+    }
+
+    public void setMensajeEstatusAck2(String mensajeEstatusAck2) {
+        this.mensajeEstatusAck2 = mensajeEstatusAck2;
     }
 
     private String clOrdId;
@@ -150,6 +175,8 @@ public class OcrEntity implements Serializable {
         return "OcrEntity{" +
                 "id=" + id +
                 ", estatus=" + estatus +
+                ", estatusAck2=" + estatusAck2 +
+                ", mensajeEstatusAck2='" + mensajeEstatusAck2 + '\'' +
                 ", clOrdId='" + clOrdId + '\'' +
                 ", orderId='" + orderId + '\'' +
                 ", origClOrdId='" + origClOrdId + '\'' +

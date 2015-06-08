@@ -28,4 +28,6 @@ public interface DBController {
     void createEr(ErEntity erEntity);
 
     void editStatus(String clOrdId, int estatus) throws Exception;
+
+    void editStatus(String clOrdId, int estatus, int estatusAck2, String descrAck2) throws Exception;
 }

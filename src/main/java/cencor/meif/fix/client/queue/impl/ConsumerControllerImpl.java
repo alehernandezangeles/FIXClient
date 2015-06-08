@@ -114,7 +114,9 @@ public class ConsumerControllerImpl implements Service {
                                     logger.error("Error al pesistir en BD: " + ack2Entity, e);
                                 }
                                 try {
-                                    dbController.editStatus(clOrdId, CatEstatusEntity.ACK2);
+                                    int estatusAck2 = ack2Entity.getValido().intValue();
+                                    String descrAck2 = ack2Entity.getMensajeError();
+                                    dbController.editStatus(clOrdId, CatEstatusEntity.ACK2, estatusAck2, descrAck2);
                                 } catch (Exception e) {
                                     logger.error("Error al cambiar el estatus de la orden " + clOrdId + " a ACK2", e);
                                 }
