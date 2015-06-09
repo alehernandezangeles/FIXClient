@@ -82,27 +82,40 @@ public class ConsumerControllerImpl implements Service {
             if (msgObj != null) {
                 if (msgObj instanceof quickfix.fix44.Message) {
                     fixMessage = (quickfix.Message) msgObj;
-                    OtrosMsjFixEntity otrosMsjFixEntity = otrosAdapter.adapt(fixMessage);
-                    try {
-                        dbController.createOtrosMsjFix(otrosMsjFixEntity);
-                    } catch (Exception e) {
-                        logger.error("Error al pesistir en BD: " + otrosMsjFixEntity, e);
-                    }
+
+                    final quickfix.Message finalFixMessage = fixMessage;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            OtrosMsjFixEntity otrosMsjFixEntity = otrosAdapter.adapt(finalFixMessage);
+                            try {
+                                dbController.createOtrosMsjFix(otrosMsjFixEntity);
+                            } catch (Exception e) {
+                                logger.error("Error al pesistir en BD: " + otrosMsjFixEntity, e);
+                            }
+                        }
+                    }).start();
 
                     if (fixMessage instanceof ExecutionReport) {
-                        ExecutionReport er = (ExecutionReport) fixMessage;
+                        final ExecutionReport er = (ExecutionReport) fixMessage;
                         CharField ordStatus = fixUtils.get(fixMessage, new OrdStatus());
                         String clOrdId = fixUtils.get(fixMessage, new ClOrdID()).getValue();
                         if (ordStatus != null) {
                             if (ordStatus.getValue() == OrdStatus.PENDING_NEW || ordStatus.getValue() == OrdStatus.PENDING_CANCEL) { // ACK1
-                                Ack1Entity ack1Entity = ConsumerControllerImpl.this.ack1Adapter.adapt(er);
-                                try {
-                                    dbController.createAck1(ack1Entity);
-                                } catch (Exception e) {
-                                    String errorMsg = "Error al pesistir en BD: " + ack1Entity;
-                                    logger.error(errorMsg, e);
-                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
-                                }
+                                final quickfix.Message finalFixMessage2 = fixMessage;
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Ack1Entity ack1Entity = ConsumerControllerImpl.this.ack1Adapter.adapt(er);
+                                        try {
+                                            dbController.createAck1(ack1Entity);
+                                        } catch (Exception e) {
+                                            String errorMsg = "Error al pesistir en BD: " + ack1Entity;
+                                            logger.error(errorMsg, e);
+                                            dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage2);
+                                        }
+                                    }
+                                }).start();
                                 try {
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ACK1);
                                 } catch (Exception e) {
@@ -111,14 +124,20 @@ public class ConsumerControllerImpl implements Service {
                                     dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                             } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) { // ACK2
-                                Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
-                                try {
-                                    dbController.createAck2(ack2Entity);
-                                } catch (Exception e) {
-                                    String errorMsg = "Error al pesistir en BD: " + ack2Entity;
-                                    logger.error(errorMsg, e);
-                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
-                                }
+                                final Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
+                                final quickfix.Message finalFixMessage3 = fixMessage;
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            dbController.createAck2(ack2Entity);
+                                        } catch (Exception e) {
+                                            String errorMsg = "Error al pesistir en BD: " + ack2Entity;
+                                            logger.error(errorMsg, e);
+                                            dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage3);
+                                        }
+                                    }
+                                }).start();
                                 try {
                                     int estatusAck2 = ack2Entity.getValido().intValue();
                                     String descrAck2 = ack2Entity.getMensajeError();
@@ -129,14 +148,20 @@ public class ConsumerControllerImpl implements Service {
                                     dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                             } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
-                                ErEntity erEntity = erAdapter.adapt(er);
-                                try {
-                                    dbController.createEr(erEntity);
-                                } catch (Exception e) {
-                                    String errorMsg = "Error al pesistir en BD: " + erEntity;
-                                    logger.error(errorMsg, e);
-                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
-                                }
+                                final quickfix.Message finalFixMessage1 = fixMessage;
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ErEntity erEntity = erAdapter.adapt(er);
+                                        try {
+                                            dbController.createEr(erEntity);
+                                        } catch (Exception e) {
+                                            String errorMsg = "Error al pesistir en BD: " + erEntity;
+                                            logger.error(errorMsg, e);
+                                            dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage1);
+                                        }
+                                    }
+                                }).start();
                                 try {
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ER);
                                 } catch (Exception e) {
