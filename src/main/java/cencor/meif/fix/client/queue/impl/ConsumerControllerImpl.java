@@ -94,7 +94,7 @@ public class ConsumerControllerImpl implements Service {
                         CharField ordStatus = fixUtils.get(fixMessage, new OrdStatus());
                         String clOrdId = fixUtils.get(fixMessage, new ClOrdID()).getValue();
                         if (ordStatus != null) {
-                            if (ordStatus.getValue() == OrdStatus.PENDING_NEW) { // ACK1
+                            if (ordStatus.getValue() == OrdStatus.PENDING_NEW || ordStatus.getValue() == OrdStatus.PENDING_CANCEL) { // ACK1
                                 Ack1Entity ack1Entity = ConsumerControllerImpl.this.ack1Adapter.adapt(er);
                                 try {
                                     dbController.createAck1(ack1Entity);
@@ -128,7 +128,7 @@ public class ConsumerControllerImpl implements Service {
                                     logger.error(errorMsg, e);
                                     dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
-                            } else if (ordStatus.getValue() == OrdStatus.NEW) { // ER
+                            } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
                                 ErEntity erEntity = erAdapter.adapt(er);
                                 try {
                                     dbController.createEr(erEntity);
