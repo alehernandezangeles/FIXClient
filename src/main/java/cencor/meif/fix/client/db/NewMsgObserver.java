@@ -1,5 +1,7 @@
 package cencor.meif.fix.client.db;
 
+import cencor.meif.fix.client.ErroresAdapter;
+import cencor.meif.fix.client.ErroresAdapterImpl;
 import cencor.meif.fix.client.FixClientSvcImpl;
 import cencor.meif.fix.client.Service;
 import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
@@ -23,6 +25,7 @@ public class NewMsgObserver implements Observer, Service {
     private NewMsgObservable newMsgObservable;
     private DBController dbController;
     private ProducerController producerController;
+    private ErroresAdapter erroresAdapter;
 
     /**
      * Crea un observador de nuevos mensajes
@@ -34,6 +37,7 @@ public class NewMsgObserver implements Observer, Service {
         this.producerController = producerController;
         this.newMsgObservable = new NewMsgObservable(dbController);
         this.newMsgObservable.addObserver(this);
+        this.erroresAdapter = new ErroresAdapterImpl();
     }
 
     /**
@@ -55,9 +59,13 @@ public class NewMsgObserver implements Observer, Service {
                     this.dbController.editNos(nosEntity);
                 }
             } catch (JMSException e) {
-                logger.error("Error al poner mensaje en la cola " + FixClientSvcImpl.REQ_QUEUE_NAME + ". Mensaje: " + entity, e);
+                String errorMsg = "Error al poner mensaje en la cola " + FixClientSvcImpl.REQ_QUEUE_NAME + ". Mensaje: " + entity;
+                logger.error(errorMsg, e);
+                dbController.createErrorUpdateEstatus(errorMsg, e, entity);
             } catch (Exception e) {
-                logger.error("Error al pesistir en BD: " + entity, e);
+                String errorMsg = "Error al pesistir en BD: " + entity;
+                logger.error(errorMsg, e);
+                dbController.createErrorUpdateEstatus(errorMsg, e, entity);
             }
         }
     }

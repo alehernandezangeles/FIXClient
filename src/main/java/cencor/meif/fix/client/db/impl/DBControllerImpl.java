@@ -1,8 +1,16 @@
 package cencor.meif.fix.client.db.impl;
 
+import cencor.meif.fix.client.ErroresAdapter;
+import cencor.meif.fix.client.ErroresAdapterImpl;
+import cencor.meif.fix.client.FixUtils;
+import cencor.meif.fix.client.FixUtilsImpl;
 import cencor.meif.fix.client.db.DBController;
 import cencor.meif.fix.client.jpa.controllers.*;
 import cencor.meif.fix.client.jpa.entities.*;
+import org.apache.log4j.Logger;
+import quickfix.Message;
+import quickfix.StringField;
+import quickfix.field.ClOrdID;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
@@ -21,6 +29,9 @@ public class DBControllerImpl implements DBController {
     private Ack1EntityJpaController ack1Controller;
     private Ack2EntityJpaController ack2Controller;
     private ErEntityJpaController erController;
+    private ErroresEntityJpaController erroresController;
+
+    private static Logger logger = Logger.getLogger(DBControllerImpl.class);
 
     public DBControllerImpl() {
         emf = Persistence.createEntityManagerFactory("jpaFixClientPU");
@@ -30,6 +41,7 @@ public class DBControllerImpl implements DBController {
         ack1Controller = new Ack1EntityJpaController(emf);
         ack2Controller = new Ack2EntityJpaController(emf);
         erController = new ErEntityJpaController(emf);
+        erroresController = new ErroresEntityJpaController(emf);
     }
 
     @Override
@@ -149,5 +161,35 @@ public class DBControllerImpl implements DBController {
             throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tablas NOS y OCR.");
         }
 
+    }
+
+    @Override
+    public void createError(ErroresEntity erroresEntity) throws Exception {
+        erroresController.create(erroresEntity);
+    }
+
+    @Override
+    public void createErrorUpdateEstatus(String errorMsg, Throwable t, Object fixMsg) {
+        FixUtils fixUtils = new FixUtilsImpl();
+        ErroresAdapter erroresAdapter = new ErroresAdapterImpl();
+        ErroresEntity erroresEntity = erroresAdapter.adapt(errorMsg, t);
+        try {
+            createError(erroresEntity);
+        } catch (Exception e) {
+            logger.error("Error al persistir error " + erroresEntity.getMensajeError(), e);
+        }
+        StringField clOrdId = null;
+        if (fixMsg != null && fixMsg instanceof Message) {
+            Message message = ((Message) fixMsg);
+            clOrdId = fixUtils.get(message, new ClOrdID());
+        }
+        if (clOrdId != null) {
+            try {
+                String strClOrdId = clOrdId.getValue();
+                editStatus(strClOrdId, CatEstatusEntity.ERROR);
+            } catch (Exception e) {
+                logger.error("Error al cambiar el estatus de la orden " + clOrdId + " al estatus de ERRRO", e);
+            }
+        }
     }
 }

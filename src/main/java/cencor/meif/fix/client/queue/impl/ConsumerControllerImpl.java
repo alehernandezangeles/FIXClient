@@ -99,38 +99,50 @@ public class ConsumerControllerImpl implements Service {
                                 try {
                                     dbController.createAck1(ack1Entity);
                                 } catch (Exception e) {
-                                    logger.error("Error al pesistir en BD: " + ack1Entity, e);
+                                    String errorMsg = "Error al pesistir en BD: " + ack1Entity;
+                                    logger.error(errorMsg, e);
+                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                                 try {
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ACK1);
                                 } catch (Exception e) {
-                                    logger.error("Error al cambiar el estatus de la orden " + clOrdId + " a ACK1", e);
+                                    String errorMsg = "Error al cambiar el estatus de la orden " + clOrdId + " a ACK1";
+                                    logger.error(errorMsg, e);
+                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                             } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) { // ACK2
                                 Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
                                 try {
                                     dbController.createAck2(ack2Entity);
                                 } catch (Exception e) {
-                                    logger.error("Error al pesistir en BD: " + ack2Entity, e);
+                                    String errorMsg = "Error al pesistir en BD: " + ack2Entity;
+                                    logger.error(errorMsg, e);
+                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                                 try {
                                     int estatusAck2 = ack2Entity.getValido().intValue();
                                     String descrAck2 = ack2Entity.getMensajeError();
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ACK2, estatusAck2, descrAck2);
                                 } catch (Exception e) {
-                                    logger.error("Error al cambiar el estatus de la orden " + clOrdId + " a ACK2", e);
+                                    String errorMsg = "Error al cambiar el estatus de la orden " + clOrdId + " a ACK2";
+                                    logger.error(errorMsg, e);
+                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                             } else if (ordStatus.getValue() == OrdStatus.NEW) { // ER
                                 ErEntity erEntity = erAdapter.adapt(er);
                                 try {
                                     dbController.createEr(erEntity);
                                 } catch (Exception e) {
-                                    logger.error("Error al pesistir en BD: " + erEntity, e);
+                                    String errorMsg = "Error al pesistir en BD: " + erEntity;
+                                    logger.error(errorMsg, e);
+                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                                 try {
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ER);
                                 } catch (Exception e) {
-                                    logger.error("Error al cambiar el estatus de la orden " + clOrdId + " a ER", e);
+                                    String errorMsg = "Error al cambiar el estatus de la orden " + clOrdId + " a ER";
+                                    logger.error(errorMsg, e);
+                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
                             }
                         }
@@ -178,7 +190,9 @@ public class ConsumerControllerImpl implements Service {
                         }
                     }
                 } catch (SessionNotFound sessionNotFound) {
-                    logger.error("Error al enviar mensaje fix: " + fixMessage, sessionNotFound);
+                    String errorMsg = "Error al enviar mensaje fix: " + fixMessage;
+                    logger.error(errorMsg, sessionNotFound);
+                    dbController.createErrorUpdateEstatus(errorMsg, sessionNotFound, fixMessage);
                 }
             }
         }
