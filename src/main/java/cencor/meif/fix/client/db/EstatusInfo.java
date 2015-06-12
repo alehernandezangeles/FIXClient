@@ -11,6 +11,7 @@ public class EstatusInfo {
     private String clOrdId;
     private int estatus, estatusAck2;
     private String descrEstatusAck2;
+    private boolean persisted;
 
     public EstatusInfo(String clOrdId, int estatus) {
         this.clOrdId = clOrdId;
@@ -61,6 +62,14 @@ public class EstatusInfo {
 
     public String getDescrEstatusAck2() {
         return descrEstatusAck2;
+    }
+
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+    public void setPersisted(boolean persisted) {
+        this.persisted = persisted;
     }
 
     @Override

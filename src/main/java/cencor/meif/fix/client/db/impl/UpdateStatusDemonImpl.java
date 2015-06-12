@@ -3,6 +3,7 @@ package cencor.meif.fix.client.db.impl;
 import cencor.meif.fix.client.db.DBController;
 import cencor.meif.fix.client.db.EstatusInfo;
 import cencor.meif.fix.client.db.UpdateStatusDemon;
+import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
@@ -27,13 +28,10 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
     @Override
     public synchronized void add(EstatusInfo estatusInfo) {
         String clOrdId = estatusInfo.getClOrdId();
-        estatusInfoMap.put(clOrdId, estatusInfo);
-    }
-
-    private synchronized void deleteIfExists(String clOrdId, int estatus) {
         EstatusInfo estatusInfoOld = estatusInfoMap.get(clOrdId);
-        if (estatusInfoOld != null && estatusInfoOld.getEstatus() == estatus) {
-            estatusInfoMap.remove(clOrdId);
+        int newStatus = estatusInfo.getEstatus();
+        if (estatusInfoOld == null || (estatusInfoOld != null && newStatus > estatusInfoOld.getEstatus())) {
+            estatusInfoMap.put(clOrdId, estatusInfo);
         }
     }
 
@@ -47,28 +45,34 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
                         if (!estatusInfoMap.isEmpty()) {
                             Collection<EstatusInfo> estatusInfos = estatusInfoMap.values();
                             for (final EstatusInfo estatusInfo : estatusInfos) {
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        String clOrdId = estatusInfo.getClOrdId();
-                                        int entityType = estatusInfo.getEntityType();
-                                        int estatus = estatusInfo.getEstatus();
-                                        try {
-                                            if (entityType == EstatusInfo.NOS_ENTITY) {
-                                                dbController.editStatusNos(clOrdId, estatus);
-                                            } else if (entityType == EstatusInfo.OCR_ENTITY) {
-                                                dbController.editStatusOcr(clOrdId, estatus);
-                                            } else {
-                                                dbController.editStatus(clOrdId, estatus);
+                                if (!estatusInfo.isPersisted()) {
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String clOrdId = estatusInfo.getClOrdId();
+                                            int entityType = estatusInfo.getEntityType();
+                                            int estatus = estatusInfo.getEstatus();
+                                            try {
+                                                if (entityType == EstatusInfo.NOS_ENTITY) {
+                                                    dbController.editStatusNos(clOrdId, estatus);
+                                                } else if (entityType == EstatusInfo.OCR_ENTITY) {
+                                                    dbController.editStatusOcr(clOrdId, estatus);
+                                                } else {
+                                                    dbController.editStatus(clOrdId, estatus);
+                                                }
+                                                estatusInfo.setPersisted(true);
+                                                if (estatusInfo.getEstatus() == CatEstatusEntity.ER) {
+                                                    UpdateStatusDemonImpl.this.estatusInfoMap.remove(estatusInfo.getClOrdId());
+                                                }
+                                            } catch (Exception e) {
+                                                logger.error("Error al modificar estatus de la orden " + clOrdId + " en la tabla NOS. Nuevo estatus " + estatus, e);
                                             }
-                                            deleteIfExists(clOrdId, estatus);
-                                        } catch (Exception e) {
-                                            logger.error("Error al modificar estatus de la orden " + clOrdId + " en la tabla NOS. Nuevo estatus " + estatus, e);
                                         }
-                                    }
-                                }).start();
+                                    }).start();
+                                }
                             }
                         }
+                        logger.info("Queue size: " + UpdateStatusDemonImpl.this.estatusInfoMap.size());
                         Thread.sleep(SLEEP_TIME);
                     }
                 } catch (InterruptedException e) {

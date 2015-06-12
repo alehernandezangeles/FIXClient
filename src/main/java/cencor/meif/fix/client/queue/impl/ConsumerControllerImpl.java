@@ -153,7 +153,7 @@ public class ConsumerControllerImpl implements Service {
                                 }
                             } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
                                 final quickfix.Message finalFixMessage1 = fixMessage;
-                                Thread thread = new Thread(new Runnable() {
+                                new Thread(new Runnable() {
                                     @Override
                                     public void run() {
                                         ErEntity erEntity = erAdapter.adapt(er);
@@ -165,9 +165,8 @@ public class ConsumerControllerImpl implements Service {
                                             dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage1);
                                         }
                                     }
-                                });
-                                // TODO Cambiar estatus
-                                logger.info("Done with " + clOrdId);
+                                }).start();
+                                ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ER));
                             }
                         }
                     }
