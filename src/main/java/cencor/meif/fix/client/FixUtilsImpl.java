@@ -1,7 +1,12 @@
 package cencor.meif.fix.client;
 
+import cencor.meif.fix.client.jpa.entities.NosEntity;
+import cencor.meif.fix.client.jpa.entities.OcrEntity;
 import org.apache.log4j.Logger;
 import quickfix.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mhernandez on 6/3/15.
@@ -68,5 +73,23 @@ public class FixUtilsImpl implements FixUtils {
         }
         return valUtcTimestampField;
 
+    }
+
+    @Override
+    public List<String> getClOrdIdListNos(List<NosEntity> nosEntities) {
+        List<String> clOrdIdListNos = new ArrayList<>();
+        for (NosEntity nosEntity : nosEntities) {
+            clOrdIdListNos.add(nosEntity.getClOrdId());
+        }
+        return clOrdIdListNos;
+    }
+
+    @Override
+    public List<String> getClOrdIdListOcr(List<OcrEntity> ocrEntities) {
+        List<String> clOrdIdListOcr = new ArrayList<>();
+        for (OcrEntity ocrEntity : ocrEntities) {
+            clOrdIdListOcr.add(ocrEntity.getClOrdId());
+        }
+        return clOrdIdListOcr;
     }
 }

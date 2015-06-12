@@ -14,8 +14,7 @@ import quickfix.fix44.ExecutionReport;
 
 import javax.jms.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException;
 
 /**
  * Created by alejandro on 5/31/15.
@@ -212,31 +211,32 @@ public class ConsumerControllerImpl implements Service {
                     SessionID sessionID = fixApp.getSessionID();
                     quickfix.Session.sendToTarget(fixMessage, sessionID);
 
-                    // Cambiar estatus a ENVIADO_A_MEIF
-                    List<String> clOrdIdListNos = new ArrayList<>();
-                    List<String> clOrdIdListOcr = new ArrayList<>();
                     if (entity instanceof NosEntity) {
-                        // TODO Cambiar a JDBC
-/*
-                        NosEntity nosEntity = (NosEntity) entity;
-                        nosEntity.setEstatus(CatEstatusEntity.ENVIADO_A_MEIF);
-                        try {
-                            dbController.editNos(nosEntity);
-                        } catch (Exception e) {
-                            logger.error("Error al pesistir en BD: " + entity, e);
-                        }
-*/
+                        final NosEntity nosEntity = (NosEntity) entity;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String clOrdId = nosEntity.getClOrdId();
+                                try {
+                                    dbController.editStatusNos(clOrdId, CatEstatusEntity.ENVIADO_A_MEIF);
+                                } catch (Exception e) {
+                                    logger.error("Error al cambiar el estatus de la orden " + nosEntity + " en la tabla NOS. Nuevo estatus: " + CatEstatusEntity.ENVIADO_A_MEIF);
+                                }
+                            }
+                        }).start();
                     } else if (entity instanceof OcrEntity) {
-                        // TODO Cambiar a JDBC
-/*
-                        OcrEntity ocrEntity = (OcrEntity) entity;
-                        ocrEntity.setEstatus(CatEstatusEntity.ENVIADO_A_MEIF);
-                        try {
-                            dbController.editOcr(ocrEntity);
-                        } catch (Exception e) {
-                            logger.error("Error al pesistir en BD: " + entity, e);
-                        }
-*/
+                        final OcrEntity ocrEntity = (OcrEntity) entity;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String clOrdId = ocrEntity.getClOrdId();
+                                try {
+                                    dbController.editStatusOcr(clOrdId, CatEstatusEntity.ENVIADO_A_MEIF);
+                                } catch (SQLException e) {
+                                    logger.error("Error al cambiar el estatus de la orden " + ocrEntity + " en la tabla OCR. Nuevo estatus: " + CatEstatusEntity.ENVIADO_A_MEIF);
+                                }
+                            }
+                        }).start();
                     }
                 } catch (SessionNotFound sessionNotFound) {
                     String errorMsg = "Error al enviar mensaje fix: " + fixMessage;

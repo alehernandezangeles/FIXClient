@@ -150,6 +150,15 @@ public class DBControllerImpl implements DBController {
     }
 
     @Override
+    public void editStatusOcr(String clOrdId, int estatus) throws SQLException {
+        int rows = jdbcController.updateStatusOcr(clOrdId, estatus);
+
+        if (rows <= 0) {
+            throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tabla OCR");
+        }
+    }
+
+    @Override
     public int editStatusOcr(List<String> clOrdIdList, int estatus) throws SQLException {
         int rows = jdbcController.updateStatusOcr(clOrdIdList, estatus);
 

@@ -31,7 +31,10 @@ public interface DBController {
     void editStatus(String clOrdId, int estatus) throws Exception;
     void editStatusNos(String clOrdId, int estatus) throws Exception;
     int editStatusNos(List<String> clOrdIdList, int estatus) throws SQLException;
+
+    void editStatusOcr(String clOrdId, int estatus) throws SQLException;
     int editStatusOcr(List<String> clOrdIdList, int estatus) throws SQLException;
+
     void updateStatus(List<String> clOrdIdListNos, List<String> clOrdIdListOcr, final int estatus);
 
     void editStatus(String clOrdId, int estatus, int estatusAck2, String descrAck2) throws Exception;

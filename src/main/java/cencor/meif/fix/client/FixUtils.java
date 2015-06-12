@@ -1,6 +1,10 @@
 package cencor.meif.fix.client;
 
+import cencor.meif.fix.client.jpa.entities.NosEntity;
+import cencor.meif.fix.client.jpa.entities.OcrEntity;
 import quickfix.*;
+
+import java.util.List;
 
 /**
  * Created by mhernandez on 6/3/15.
@@ -11,5 +15,8 @@ public interface FixUtils {
     CharField get(Message message, CharField stringField);
     DoubleField get(Message message, DoubleField doubleField);
     UtcTimeStampField get(Message message, UtcTimeStampField utcTimeStampField);
+
+    List<String> getClOrdIdListNos(List<NosEntity> nosEntities);
+    List<String> getClOrdIdListOcr(List<OcrEntity> ocrEntities);
 
 }

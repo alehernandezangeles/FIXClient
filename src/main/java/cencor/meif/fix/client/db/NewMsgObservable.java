@@ -1,5 +1,7 @@
 package cencor.meif.fix.client.db;
 
+import cencor.meif.fix.client.FixUtils;
+import cencor.meif.fix.client.FixUtilsImpl;
 import cencor.meif.fix.client.Service;
 import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import cencor.meif.fix.client.jpa.entities.NosEntity;
@@ -24,9 +26,11 @@ public class NewMsgObservable extends Observable implements Service {
     public static final int POLLING_TIME = 1000;
 
     private DBController dbController;
+    private FixUtils fixUtils;
 
     public NewMsgObservable(DBController dbController) {
         this.dbController = dbController;
+        this.fixUtils = new FixUtilsImpl();
     }
 
     /**
@@ -46,8 +50,8 @@ public class NewMsgObservable extends Observable implements Service {
             // Si hay nuevas ordenes cambiar estatus y notificar
             if (entities.size() > 0) {
                 // cambiar el estatus de las ordenes a "Por enviar a MEIF"
-                List<String> clOrdIdListNos = getClOrdIdListNos(nosEntities);
-                List<String> clOrdIdListOcr = getClOrdIdListOcr(ocrEntities);
+                List<String> clOrdIdListNos = this.fixUtils.getClOrdIdListNos(nosEntities);
+                List<String> clOrdIdListOcr = this.fixUtils.getClOrdIdListOcr(ocrEntities);
                 this.dbController.updateStatus(clOrdIdListNos, clOrdIdListOcr, CatEstatusEntity.POR_ENVIAR_A_MEIF);
 
                 // Notificar a los observers
@@ -58,22 +62,6 @@ public class NewMsgObservable extends Observable implements Service {
             try { Thread.sleep(POLLING_TIME); }
             catch (InterruptedException e) { e.printStackTrace(); }
         }
-    }
-
-    private List<String> getClOrdIdListNos(List<NosEntity> nosEntities) {
-        List<String> clOrdIdListNos = new ArrayList<>();
-        for (NosEntity nosEntity : nosEntities) {
-            clOrdIdListNos.add(nosEntity.getClOrdId());
-        }
-        return clOrdIdListNos;
-    }
-
-    private List<String> getClOrdIdListOcr(List<OcrEntity> ocrEntities) {
-        List<String> clOrdIdListOcr = new ArrayList<>();
-        for (OcrEntity ocrEntity : ocrEntities) {
-            clOrdIdListOcr.add(ocrEntity.getClOrdId());
-        }
-        return clOrdIdListOcr;
     }
 
 }
