@@ -1,5 +1,7 @@
 package cencor.meif.fix.client.jpa.entities;
 
+import org.eclipse.persistence.annotations.ReadOnly;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
@@ -10,6 +12,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @javax.persistence.Table(name = "NOS", schema = "", catalog = "FixClientDB")
+@ReadOnly
 public class NosEntity implements Serializable {
     private Long id;
 

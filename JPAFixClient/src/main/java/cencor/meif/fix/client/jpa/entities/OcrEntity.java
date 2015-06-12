@@ -1,5 +1,7 @@
 package cencor.meif.fix.client.jpa.entities;
 
+import org.eclipse.persistence.annotations.ReadOnly;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +14,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @javax.persistence.Table(name = "OCR", schema = "", catalog = "FixClientDB")
+@ReadOnly
 public class OcrEntity implements Serializable {
     private Long id;
 

@@ -1,12 +1,12 @@
 package cencor.meif.fix.client;
 
 import cencor.meif.fix.client.jpa.entities.ErroresEntity;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.ClOrdID;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -41,6 +41,9 @@ public class ErroresAdapterImpl implements ErroresAdapter {
         ErroresEntity entity = new ErroresEntity();
         String stacktrace = getStacktrace(t);
         String msg = errorMsg + ": " + stacktrace;
+        if (msg.length() > ErroresEntity.MAX_LENGTH_ERROR) {
+            msg = msg.substring(0, ErroresEntity.MAX_LENGTH_ERROR);
+        }
 
         entity.setFechaInsercion(new Timestamp(new Date().getTime()));
         entity.setMensajeError(msg);
@@ -59,11 +62,11 @@ public class ErroresAdapterImpl implements ErroresAdapter {
     }
 
     private String getStacktrace(Throwable t) {
-        ByteOutputStream bos = new ByteOutputStream();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(bos);
         t.printStackTrace(pw);
 
-        String stacktrace = new String(bos.getBytes());
+        String stacktrace = new String(bos.toByteArray());
         return stacktrace;
     }
 

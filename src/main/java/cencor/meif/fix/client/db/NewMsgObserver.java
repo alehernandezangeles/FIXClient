@@ -4,8 +4,6 @@ import cencor.meif.fix.client.ErroresAdapter;
 import cencor.meif.fix.client.ErroresAdapterImpl;
 import cencor.meif.fix.client.FixClientSvcImpl;
 import cencor.meif.fix.client.Service;
-import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
-import cencor.meif.fix.client.jpa.entities.NosEntity;
 import cencor.meif.fix.client.queue.ProducerController;
 import org.apache.log4j.Logger;
 
@@ -48,16 +46,11 @@ public class NewMsgObserver implements Observer, Service {
     @Override
     public void update(Observable o, Object newOrders) {
         List<Serializable> entities = (List<Serializable>) newOrders;
-        for (Serializable entity : entities) {
+        for (final Serializable entity : entities) {
+            logger.info("Starting with " + entity);
             try {
                 // enviar a la cola de nuevas peticiones
                 producerController.putReq(entity);
-                // cambiar el estatus de la orden a "Por enviar a MEIF"
-                if (entity instanceof NosEntity) {
-                    NosEntity nosEntity = (NosEntity) entity;
-                    nosEntity.setEstatus(CatEstatusEntity.POR_ENVIAR_A_MEIF);
-                    this.dbController.editNos(nosEntity);
-                }
             } catch (JMSException e) {
                 String errorMsg = "Error al poner mensaje en la cola " + FixClientSvcImpl.REQ_QUEUE_NAME + ". Mensaje: " + entity;
                 logger.error(errorMsg, e);

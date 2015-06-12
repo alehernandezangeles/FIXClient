@@ -5,6 +5,10 @@ import cencor.meif.fix.client.ErroresAdapterImpl;
 import cencor.meif.fix.client.FixUtils;
 import cencor.meif.fix.client.FixUtilsImpl;
 import cencor.meif.fix.client.db.DBController;
+import cencor.meif.fix.client.db.UpdateNosStatus;
+import cencor.meif.fix.client.db.UpdateOcrStatus;
+import cencor.meif.fix.client.jdbc.JdbcController;
+import cencor.meif.fix.client.jdbc.JdbcControllerImpl;
 import cencor.meif.fix.client.jpa.controllers.*;
 import cencor.meif.fix.client.jpa.entities.*;
 import org.apache.log4j.Logger;
@@ -15,6 +19,8 @@ import quickfix.field.ClOrdID;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -31,6 +37,8 @@ public class DBControllerImpl implements DBController {
     private ErEntityJpaController erController;
     private ErroresEntityJpaController erroresController;
 
+    private JdbcController jdbcController;
+
     private static Logger logger = Logger.getLogger(DBControllerImpl.class);
 
     public DBControllerImpl() {
@@ -42,6 +50,20 @@ public class DBControllerImpl implements DBController {
         ack2Controller = new Ack2EntityJpaController(emf);
         erController = new ErEntityJpaController(emf);
         erroresController = new ErroresEntityJpaController(emf);
+
+        try {
+            jdbcController = new JdbcControllerImpl();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -100,31 +122,56 @@ public class DBControllerImpl implements DBController {
 
     @Override
     public void editStatus(String clOrdId, int estatus) throws Exception {
-        NosEntity nosEntity = null;
-        OcrEntity ocrEntity = null;
-
-        // Busca en la tabla NOS
-        try {
-            nosEntity = nosController.findNosByClOrdId(clOrdId);
-            nosEntity.setEstatus(estatus);
-        } catch (NoResultException e) {
-        }
-
+        int rows = jdbcController.updateStatusNos(clOrdId, estatus);
         // Si no está en la tabla NOS busca en OCR
-        if (nosEntity == null) {
-            try {
-                ocrEntity = ocrControlleer.findOcrByClOrdId(clOrdId);
-                ocrEntity.setEstatus(estatus);
-            } catch (NoResultException e) {
-            }
+        if (rows <= 0) {
+            rows = jdbcController.updateStatusOcr(clOrdId, estatus);
         }
 
-        if (nosEntity != null) {
-            editNos(nosEntity);
-        } else if (ocrEntity != null) {
-            editOcr(ocrEntity);
-        } else {
+        if (rows <= 0) {
             throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tablas NOS y OCR.");
+        }
+    }
+
+    @Override
+    public void editStatusNos(String clOrdId, int estatus) throws Exception {
+        int rows = jdbcController.updateStatusNos(clOrdId, estatus);
+
+        if (rows <= 0) {
+            throw new NoResultException("El clOrdId " + clOrdId + " no se encontró en la BD, tabla NOS");
+        }
+    }
+
+    @Override
+    public int editStatusNos(List<String> clOrdIdList, int estatus) throws SQLException {
+        int rows = jdbcController.updateStatusNos(clOrdIdList, estatus);
+
+        return rows;
+    }
+
+    @Override
+    public int editStatusOcr(List<String> clOrdIdList, int estatus) throws SQLException {
+        int rows = jdbcController.updateStatusOcr(clOrdIdList, estatus);
+
+        return rows;
+    }
+
+    @Override
+    public void updateStatus(List<String> clOrdIdListNos, List<String> clOrdIdListOcr, int estatus) {
+        Thread threadNos = new Thread(new UpdateNosStatus(this, clOrdIdListNos, estatus));
+        Thread threadOcr = new Thread(new UpdateOcrStatus(this, clOrdIdListOcr, estatus));
+        threadNos.start();
+        threadOcr.start();
+
+        try {
+            threadNos.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            threadOcr.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

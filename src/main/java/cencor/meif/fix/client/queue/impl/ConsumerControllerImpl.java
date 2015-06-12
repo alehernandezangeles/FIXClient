@@ -14,6 +14,8 @@ import quickfix.fix44.ExecutionReport;
 
 import javax.jms.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by alejandro on 5/31/15.
@@ -116,6 +118,8 @@ public class ConsumerControllerImpl implements Service {
                                         }
                                     }
                                 }).start();
+                                // TODO Cambiar a JDBC
+/*
                                 try {
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ACK1);
                                 } catch (Exception e) {
@@ -123,6 +127,7 @@ public class ConsumerControllerImpl implements Service {
                                     logger.error(errorMsg, e);
                                     dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
+*/
                             } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) { // ACK2
                                 final Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
                                 final quickfix.Message finalFixMessage3 = fixMessage;
@@ -139,13 +144,19 @@ public class ConsumerControllerImpl implements Service {
                                     }
                                 }).start();
                                 try {
+                                    // TODO Cambiar a JDBC
+/*
                                     int estatusAck2 = ack2Entity.getValido().intValue();
                                     String descrAck2 = ack2Entity.getMensajeError();
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ACK2, estatusAck2, descrAck2);
+*/
                                 } catch (Exception e) {
+                                    // TODO Cambiar a JDBC
+/*
                                     String errorMsg = "Error al cambiar el estatus de la orden " + clOrdId + " a ACK2";
                                     logger.error(errorMsg, e);
                                     dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
+*/
                                 }
                             } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
                                 final quickfix.Message finalFixMessage1 = fixMessage;
@@ -162,6 +173,9 @@ public class ConsumerControllerImpl implements Service {
                                         }
                                     }
                                 }).start();
+                                // TODO Cambiar a JDBC
+                                logger.info("Done with " + clOrdId);
+/*
                                 try {
                                     dbController.editStatus(clOrdId, CatEstatusEntity.ER);
                                 } catch (Exception e) {
@@ -169,6 +183,7 @@ public class ConsumerControllerImpl implements Service {
                                     logger.error(errorMsg, e);
                                     dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
                                 }
+*/
                             }
                         }
                     }
@@ -197,7 +212,12 @@ public class ConsumerControllerImpl implements Service {
                     SessionID sessionID = fixApp.getSessionID();
                     quickfix.Session.sendToTarget(fixMessage, sessionID);
 
+                    // Cambiar estatus a ENVIADO_A_MEIF
+                    List<String> clOrdIdListNos = new ArrayList<>();
+                    List<String> clOrdIdListOcr = new ArrayList<>();
                     if (entity instanceof NosEntity) {
+                        // TODO Cambiar a JDBC
+/*
                         NosEntity nosEntity = (NosEntity) entity;
                         nosEntity.setEstatus(CatEstatusEntity.ENVIADO_A_MEIF);
                         try {
@@ -205,7 +225,10 @@ public class ConsumerControllerImpl implements Service {
                         } catch (Exception e) {
                             logger.error("Error al pesistir en BD: " + entity, e);
                         }
+*/
                     } else if (entity instanceof OcrEntity) {
+                        // TODO Cambiar a JDBC
+/*
                         OcrEntity ocrEntity = (OcrEntity) entity;
                         ocrEntity.setEstatus(CatEstatusEntity.ENVIADO_A_MEIF);
                         try {
@@ -213,6 +236,7 @@ public class ConsumerControllerImpl implements Service {
                         } catch (Exception e) {
                             logger.error("Error al pesistir en BD: " + entity, e);
                         }
+*/
                     }
                 } catch (SessionNotFound sessionNotFound) {
                     String errorMsg = "Error al enviar mensaje fix: " + fixMessage;

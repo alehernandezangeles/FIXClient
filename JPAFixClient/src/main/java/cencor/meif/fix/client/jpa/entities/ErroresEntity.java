@@ -1,7 +1,7 @@
 package cencor.meif.fix.client.jpa.entities;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -10,6 +10,9 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "Errores", schema = "", catalog = "FixClientDB")
 public class ErroresEntity implements Serializable {
+
+    public static final int MAX_LENGTH_ERROR = 1024;
+
     private Long id;
     private String clOrdId;
     private String mensajeError;
