@@ -2,6 +2,8 @@ package cencor.meif.fix.client.queue.impl;
 
 import cencor.meif.fix.client.*;
 import cencor.meif.fix.client.db.DBController;
+import cencor.meif.fix.client.db.EstatusInfo;
+import cencor.meif.fix.client.db.UpdateStatusDemon;
 import cencor.meif.fix.client.jpa.entities.*;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.log4j.Logger;
@@ -14,7 +16,6 @@ import quickfix.fix44.ExecutionReport;
 
 import javax.jms.*;
 import java.io.Serializable;
-import java.sql.SQLException;
 
 /**
  * Created by alejandro on 5/31/15.
@@ -40,12 +41,14 @@ public class ConsumerControllerImpl implements Service {
     private MessageListener messageListener;
     private FixApp fixApp;
     private DBController dbController;
+    private UpdateStatusDemon updateStatusDemon;
 
     private FixUtils fixUtils;
 
-    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController) throws JMSException {
+    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController, UpdateStatusDemon updateStatusDemon) throws JMSException {
         this.fixApp = fixApp;
         this.dbController = dbController;
+        this.updateStatusDemon = updateStatusDemon;
         this.nosAdapter = new NOSAdapterImpl();
         this.ocrAdapter = new OCRAdapterImpl();
         this.otrosAdapter = new OtrosAdapterImpl();
@@ -117,16 +120,7 @@ public class ConsumerControllerImpl implements Service {
                                         }
                                     }
                                 }).start();
-                                // TODO Cambiar a JDBC
-/*
-                                try {
-                                    dbController.editStatus(clOrdId, CatEstatusEntity.ACK1);
-                                } catch (Exception e) {
-                                    String errorMsg = "Error al cambiar el estatus de la orden " + clOrdId + " a ACK1";
-                                    logger.error(errorMsg, e);
-                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
-                                }
-*/
+                                ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ACK1));
                             } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) { // ACK2
                                 final Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
                                 final quickfix.Message finalFixMessage3 = fixMessage;
@@ -159,7 +153,7 @@ public class ConsumerControllerImpl implements Service {
                                 }
                             } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
                                 final quickfix.Message finalFixMessage1 = fixMessage;
-                                new Thread(new Runnable() {
+                                Thread thread = new Thread(new Runnable() {
                                     @Override
                                     public void run() {
                                         ErEntity erEntity = erAdapter.adapt(er);
@@ -171,18 +165,9 @@ public class ConsumerControllerImpl implements Service {
                                             dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage1);
                                         }
                                     }
-                                }).start();
-                                // TODO Cambiar a JDBC
+                                });
+                                // TODO Cambiar estatus
                                 logger.info("Done with " + clOrdId);
-/*
-                                try {
-                                    dbController.editStatus(clOrdId, CatEstatusEntity.ER);
-                                } catch (Exception e) {
-                                    String errorMsg = "Error al cambiar el estatus de la orden " + clOrdId + " a ER";
-                                    logger.error(errorMsg, e);
-                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
-                                }
-*/
                             }
                         }
                     }
@@ -212,31 +197,13 @@ public class ConsumerControllerImpl implements Service {
                     quickfix.Session.sendToTarget(fixMessage, sessionID);
 
                     if (entity instanceof NosEntity) {
-                        final NosEntity nosEntity = (NosEntity) entity;
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                String clOrdId = nosEntity.getClOrdId();
-                                try {
-                                    dbController.editStatusNos(clOrdId, CatEstatusEntity.ENVIADO_A_MEIF);
-                                } catch (Exception e) {
-                                    logger.error("Error al cambiar el estatus de la orden " + nosEntity + " en la tabla NOS. Nuevo estatus: " + CatEstatusEntity.ENVIADO_A_MEIF);
-                                }
-                            }
-                        }).start();
+                        NosEntity nosEntity = (NosEntity) entity;
+                        String clOrdId = nosEntity.getClOrdId();
+                        ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(EstatusInfo.NOS_ENTITY, clOrdId, CatEstatusEntity.ENVIADO_A_MEIF));
                     } else if (entity instanceof OcrEntity) {
-                        final OcrEntity ocrEntity = (OcrEntity) entity;
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                String clOrdId = ocrEntity.getClOrdId();
-                                try {
-                                    dbController.editStatusOcr(clOrdId, CatEstatusEntity.ENVIADO_A_MEIF);
-                                } catch (SQLException e) {
-                                    logger.error("Error al cambiar el estatus de la orden " + ocrEntity + " en la tabla OCR. Nuevo estatus: " + CatEstatusEntity.ENVIADO_A_MEIF);
-                                }
-                            }
-                        }).start();
+                        OcrEntity ocrEntity = (OcrEntity) entity;
+                        String clOrdId = ocrEntity.getClOrdId();
+                        ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(EstatusInfo.OCR_ENTITY, clOrdId, CatEstatusEntity.ENVIADO_A_MEIF));
                     }
                 } catch (SessionNotFound sessionNotFound) {
                     String errorMsg = "Error al enviar mensaje fix: " + fixMessage;

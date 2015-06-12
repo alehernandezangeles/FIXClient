@@ -2,7 +2,9 @@ package cencor.meif.fix.client;
 
 import cencor.meif.fix.client.db.DBController;
 import cencor.meif.fix.client.db.NewMsgObserver;
+import cencor.meif.fix.client.db.UpdateStatusDemon;
 import cencor.meif.fix.client.db.impl.DBControllerImpl;
+import cencor.meif.fix.client.db.impl.UpdateStatusDemonImpl;
 import cencor.meif.fix.client.queue.ProducerController;
 import cencor.meif.fix.client.queue.impl.ConsumerControllerImpl;
 import cencor.meif.fix.client.queue.impl.ProducerControllerImpl;
@@ -36,6 +38,7 @@ public class FixClientSvcImpl implements Service {
     // DB related
     private DBController dbController;
     private NewMsgObserver newMsgObserver;
+    private UpdateStatusDemon updateStatusDemon;
 
     // Broker related
     private ProducerController producerController;
@@ -53,13 +56,14 @@ public class FixClientSvcImpl implements Service {
     private void initResources() throws JMSException, IOException, ConfigError {
         initFixClient();
         dbController = new DBControllerImpl();
+        updateStatusDemon = new UpdateStatusDemonImpl(dbController);
 
         ConnectionFactory brokerCF = new ActiveMQConnectionFactory(BROKER_URL);
         brokerConn = brokerCF.createConnection();
         brokerConn.start();
         producerController = new ProducerControllerImpl(brokerConn);
         fixApp.setProducerController(producerController);
-        consumerController = new ConsumerControllerImpl(brokerConn, fixApp, dbController);
+        consumerController = new ConsumerControllerImpl(brokerConn, fixApp, dbController, updateStatusDemon);
 
         newMsgObserver = new NewMsgObserver(dbController, producerController);
     }
@@ -80,11 +84,14 @@ public class FixClientSvcImpl implements Service {
         // Connect to MEIF
         startFixConn();
 
+        updateStatusDemon.start();
+
         // start listening for new messages in queue
         consumerController.start();
 
         // start observing for new orders
         newMsgObserver.start();
+
     }
 
     private void startFixConn() {
