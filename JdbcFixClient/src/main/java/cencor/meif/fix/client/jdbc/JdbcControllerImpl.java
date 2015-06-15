@@ -1,7 +1,6 @@
 package cencor.meif.fix.client.jdbc;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,7 +15,7 @@ import java.util.Properties;
  * Created by mhernandez on 6/11/15.
  */
 public class JdbcControllerImpl implements JdbcController {
-    private static Logger logger = LogManager.getLogger(JdbcControllerImpl.class);
+    private static Logger logger = Logger.getLogger(JdbcControllerImpl.class);
     public static final String UPDATE_NOS_SET_ESTATUS = "UPDATE NOS SET Estatus = ? WHERE ClOrdID = ?";
     public static final String UPDATE_OCR_SET_ESTATUS = "UPDATE OCR SET Estatus = ? WHERE ClOrdID = ?";
 
