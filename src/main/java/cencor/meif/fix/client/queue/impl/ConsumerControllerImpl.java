@@ -136,21 +136,9 @@ public class ConsumerControllerImpl implements Service {
                                         }
                                     }
                                 }).start();
-                                try {
-                                    // TODO Cambiar a JDBC
-/*
-                                    int estatusAck2 = ack2Entity.getValido().intValue();
-                                    String descrAck2 = ack2Entity.getMensajeError();
-                                    dbController.editStatus(clOrdId, CatEstatusEntity.ACK2, estatusAck2, descrAck2);
-*/
-                                } catch (Exception e) {
-                                    // TODO Cambiar a JDBC
-/*
-                                    String errorMsg = "Error al cambiar el estatus de la orden " + clOrdId + " a ACK2";
-                                    logger.error(errorMsg, e);
-                                    dbController.createErrorUpdateEstatus(errorMsg, e, fixMessage);
-*/
-                                }
+                                int estatusAck2 = ack2Entity.getValido().intValue();
+                                String descrAck2 = ack2Entity.getMensajeError();
+                                ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ACK2, estatusAck2, descrAck2));
                             } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
                                 final quickfix.Message finalFixMessage1 = fixMessage;
                                 new Thread(new Runnable() {
@@ -194,6 +182,7 @@ public class ConsumerControllerImpl implements Service {
                 try {
                     SessionID sessionID = fixApp.getSessionID();
                     quickfix.Session.sendToTarget(fixMessage, sessionID);
+                    logger.info("Sent to fix: " + fixMessage);
 
                     if (entity instanceof NosEntity) {
                         NosEntity nosEntity = (NosEntity) entity;

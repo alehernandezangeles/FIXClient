@@ -32,48 +32,64 @@ public class EstatusInfo {
         this.descrEstatusAck2 = descrEstatusAck2;
     }
 
-    public static int getNosEntity() {
-        return NOS_ENTITY;
-    }
-
-    public void setEntityType(int entityType) {
+    public EstatusInfo(String clOrdId, int estatus, int estatusAck2, String descrEstatusAck2) {
         this.entityType = entityType;
+        this.clOrdId = clOrdId;
+        this.estatus = estatus;
+        this.estatusAck2 = estatusAck2;
+        this.descrEstatusAck2 = descrEstatusAck2;
     }
 
-    public static int getOcrEntity() {
-        return OCR_ENTITY;
-    }
-
-    public int getEntityType() {
+    public synchronized int getEntityType() {
         return entityType;
     }
 
-    public String getClOrdId() {
+    public synchronized void setEntityType(int entityType) {
+        this.entityType = entityType;
+    }
+
+    public synchronized String getClOrdId() {
         return clOrdId;
     }
 
-    public int getEstatus() {
+    public synchronized void setClOrdId(String clOrdId) {
+        this.clOrdId = clOrdId;
+    }
+
+    public synchronized int getEstatus() {
         return estatus;
     }
 
-    public int getEstatusAck2() {
+    public synchronized void setEstatus(int estatus) {
+        this.estatus = estatus;
+    }
+
+    public synchronized int getEstatusAck2() {
         return estatusAck2;
     }
 
-    public String getDescrEstatusAck2() {
+    public synchronized void setEstatusAck2(int estatusAck2) {
+        this.estatusAck2 = estatusAck2;
+    }
+
+    public synchronized String getDescrEstatusAck2() {
         return descrEstatusAck2;
     }
 
-    public boolean isPersisted() {
+    public synchronized void setDescrEstatusAck2(String descrEstatusAck2) {
+        this.descrEstatusAck2 = descrEstatusAck2;
+    }
+
+    public synchronized boolean isPersisted() {
         return persisted;
     }
 
-    public void setPersisted(boolean persisted) {
+    public synchronized void setPersisted(boolean persisted) {
         this.persisted = persisted;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public synchronized boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -84,18 +100,20 @@ public class EstatusInfo {
     }
 
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         return clOrdId.hashCode();
     }
 
+
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "EstatusInfo{" +
                 "entityType=" + entityType +
                 ", clOrdId='" + clOrdId + '\'' +
                 ", estatus=" + estatus +
                 ", estatusAck2=" + estatusAck2 +
                 ", descrEstatusAck2='" + descrEstatusAck2 + '\'' +
+                ", persisted=" + persisted +
                 '}';
     }
 }

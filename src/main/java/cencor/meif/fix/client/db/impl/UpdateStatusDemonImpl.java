@@ -30,8 +30,11 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
         String clOrdId = estatusInfo.getClOrdId();
         EstatusInfo estatusInfoOld = estatusInfoMap.get(clOrdId);
         int newStatus = estatusInfo.getEstatus();
-        if (estatusInfoOld == null || (estatusInfoOld != null && newStatus > estatusInfoOld.getEstatus())) {
+        if (estatusInfoOld == null) {
             estatusInfoMap.put(clOrdId, estatusInfo);
+        } else if (estatusInfoOld != null && newStatus > estatusInfoOld.getEstatus()) {
+            estatusInfoOld.setEstatus(newStatus);
+            estatusInfoOld.setPersisted(false);
         }
     }
 
@@ -45,24 +48,26 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
                         if (!estatusInfoMap.isEmpty()) {
                             Collection<EstatusInfo> estatusInfos = estatusInfoMap.values();
                             for (final EstatusInfo estatusInfo : estatusInfos) {
-                                if (!estatusInfo.isPersisted()) {
-                                    String clOrdId = estatusInfo.getClOrdId();
-                                    int entityType = estatusInfo.getEntityType();
-                                    int estatus = estatusInfo.getEstatus();
-                                    try {
-                                        if (entityType == EstatusInfo.NOS_ENTITY) {
-                                            dbController.editStatusNos(clOrdId, estatus);
-                                        } else if (entityType == EstatusInfo.OCR_ENTITY) {
-                                            dbController.editStatusOcr(clOrdId, estatus);
-                                        } else {
-                                            dbController.editStatus(clOrdId, estatus);
+                                synchronized (estatusInfo) {
+                                    if (!estatusInfo.isPersisted()) {
+                                        String clOrdId = estatusInfo.getClOrdId();
+                                        int entityType = estatusInfo.getEntityType();
+                                        int estatus = estatusInfo.getEstatus();
+                                        try {
+                                            if (entityType == EstatusInfo.NOS_ENTITY) {
+                                                dbController.editStatusNos(clOrdId, estatus);
+                                            } else if (entityType == EstatusInfo.OCR_ENTITY) {
+                                                dbController.editStatusOcr(clOrdId, estatus);
+                                            } else {
+                                                dbController.editStatus(clOrdId, estatus);
+                                            }
+                                            estatusInfo.setPersisted(true);
+                                            if (estatusInfo.getEstatus() == CatEstatusEntity.ER || (estatusInfo.getEstatus() == CatEstatusEntity.ACK2 && estatusInfo.getEstatusAck2() == 0) || estatusInfo.getEstatus() == CatEstatusEntity.ERROR) {
+                                                UpdateStatusDemonImpl.this.estatusInfoMap.remove(estatusInfo.getClOrdId());
+                                            }
+                                        } catch (Exception e) {
+                                            logger.error("Error al modificar estatus de la orden " + clOrdId + " en la tabla NOS. Nuevo estatus " + estatus, e);
                                         }
-                                        estatusInfo.setPersisted(true);
-                                        if (estatusInfo.getEstatus() == CatEstatusEntity.ER) {
-                                            UpdateStatusDemonImpl.this.estatusInfoMap.remove(estatusInfo.getClOrdId());
-                                        }
-                                    } catch (Exception e) {
-                                        logger.error("Error al modificar estatus de la orden " + clOrdId + " en la tabla NOS. Nuevo estatus " + estatus, e);
                                     }
                                 }
                             }
