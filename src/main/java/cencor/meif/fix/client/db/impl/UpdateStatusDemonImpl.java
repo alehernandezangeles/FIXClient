@@ -46,29 +46,24 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
                             Collection<EstatusInfo> estatusInfos = estatusInfoMap.values();
                             for (final EstatusInfo estatusInfo : estatusInfos) {
                                 if (!estatusInfo.isPersisted()) {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            String clOrdId = estatusInfo.getClOrdId();
-                                            int entityType = estatusInfo.getEntityType();
-                                            int estatus = estatusInfo.getEstatus();
-                                            try {
-                                                if (entityType == EstatusInfo.NOS_ENTITY) {
-                                                    dbController.editStatusNos(clOrdId, estatus);
-                                                } else if (entityType == EstatusInfo.OCR_ENTITY) {
-                                                    dbController.editStatusOcr(clOrdId, estatus);
-                                                } else {
-                                                    dbController.editStatus(clOrdId, estatus);
-                                                }
-                                                estatusInfo.setPersisted(true);
-                                                if (estatusInfo.getEstatus() == CatEstatusEntity.ER) {
-                                                    UpdateStatusDemonImpl.this.estatusInfoMap.remove(estatusInfo.getClOrdId());
-                                                }
-                                            } catch (Exception e) {
-                                                logger.error("Error al modificar estatus de la orden " + clOrdId + " en la tabla NOS. Nuevo estatus " + estatus, e);
-                                            }
+                                    String clOrdId = estatusInfo.getClOrdId();
+                                    int entityType = estatusInfo.getEntityType();
+                                    int estatus = estatusInfo.getEstatus();
+                                    try {
+                                        if (entityType == EstatusInfo.NOS_ENTITY) {
+                                            dbController.editStatusNos(clOrdId, estatus);
+                                        } else if (entityType == EstatusInfo.OCR_ENTITY) {
+                                            dbController.editStatusOcr(clOrdId, estatus);
+                                        } else {
+                                            dbController.editStatus(clOrdId, estatus);
                                         }
-                                    }).start();
+                                        estatusInfo.setPersisted(true);
+                                        if (estatusInfo.getEstatus() == CatEstatusEntity.ER) {
+                                            UpdateStatusDemonImpl.this.estatusInfoMap.remove(estatusInfo.getClOrdId());
+                                        }
+                                    } catch (Exception e) {
+                                        logger.error("Error al modificar estatus de la orden " + clOrdId + " en la tabla NOS. Nuevo estatus " + estatus, e);
+                                    }
                                 }
                             }
                         }
