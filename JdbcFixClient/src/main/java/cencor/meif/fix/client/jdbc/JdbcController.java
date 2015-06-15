@@ -13,4 +13,7 @@ public interface JdbcController {
     int updateStatusOcr(String clOrdId, int estatus) throws SQLException;
     int updateStatusOcr(List<String> clOrdIdList, int estatus) throws SQLException;
 
+    void moveToHist();
+    int copyHist(String dbSource, String dbtarget, String tblName) throws SQLException;
+    int deleteHist(String dbName, String tblName) throws SQLException;
 }

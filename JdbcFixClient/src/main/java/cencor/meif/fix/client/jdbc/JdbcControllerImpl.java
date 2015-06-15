@@ -1,5 +1,8 @@
 package cencor.meif.fix.client.jdbc;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,6 +16,7 @@ import java.util.Properties;
  * Created by mhernandez on 6/11/15.
  */
 public class JdbcControllerImpl implements JdbcController {
+    private static Logger logger = LogManager.getLogger(JdbcControllerImpl.class);
     public static final String UPDATE_NOS_SET_ESTATUS = "UPDATE NOS SET Estatus = ? WHERE ClOrdID = ?";
     public static final String UPDATE_OCR_SET_ESTATUS = "UPDATE OCR SET Estatus = ? WHERE ClOrdID = ?";
 
@@ -65,6 +69,58 @@ public class JdbcControllerImpl implements JdbcController {
         int rows = updateStatus(OCR_TABLE, clOrdIdList, estatus);
 
         return rows;
+    }
+
+    @Override
+    public void moveToHist() {
+        // Copy data
+
+
+        // Delete data
+    }
+
+    @Override
+    public int copyHist(String dbSource, String dbtarget, String tblName) throws SQLException {
+        logger.info("Begin to copyHist: " + dbSource + ", " + dbtarget + ", " + tblName);
+        String sql = null;
+        if (tblName.equals("NOS") || tblName.equals("OCR") || tblName.equals("ER")) {
+            sql = "INSERT INTO " + dbtarget + "." + tblName + " (\n" +
+                    "\tSELECT * FROM " + dbSource + "." + tblName + " WHERE DATE(TransactTime) < CURDATE()" +
+                    "\n);";
+        } else {
+            sql = "INSERT INTO " + dbtarget + "." + tblName + " (\n" +
+                    "\tSELECT * FROM " + dbSource + "." + tblName + " WHERE DATE(FechaInsercion) < CURDATE()" +
+                    "\n);";
+
+        }
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        int rows = pstmt.executeUpdate();
+
+        if (pstmt != null) {
+            pstmt.close();
+        }
+        logger.info("Ended copyHist: " + dbSource + ", " + dbtarget + ", " + tblName + ". Rows copied: " + rows);
+        return rows;
+    }
+
+    @Override
+    public int deleteHist(String dbName, String tblName) throws SQLException {
+        logger.info("Begin to deleteHist: " + dbName + ", " + tblName);
+        String sql = null;
+        if (tblName.equals("NOS") || tblName.equals("OCR") || tblName.equals("ER")) {
+            sql = "\tDELETE FROM " + dbName + "." + tblName + " WHERE DATE(TransactTime) < CURDATE()";
+        } else {
+            sql = "\tDELETE FROM " + dbName + "." + tblName + " WHERE DATE(FechaInsercion) < CURDATE()";
+        }
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        int rows = pstmt.executeUpdate();
+
+        if (pstmt != null) {
+            pstmt.close();
+        }
+        logger.info("Ended deleteHist: " + dbName + ", " + tblName + ". Rows deleted: " + rows);
+        return rows;
+
     }
 
     private int updateStatus(String nomTable, List<String> clOrdIdList, int estatus) throws SQLException {
