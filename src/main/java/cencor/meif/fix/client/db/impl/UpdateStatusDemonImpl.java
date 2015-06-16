@@ -95,6 +95,6 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
                 }
                 logger.info("Updated estatus from classifier: " + rows + " / " + estatusClassifier.size());
             }
-        }).start();
+        }, "UpdateStatusDemon").start();
     }
 }

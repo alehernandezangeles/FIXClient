@@ -28,6 +28,8 @@ public class InsertFixMsgThreadImpl extends Thread implements InsertFixMsgThread
         this.dbController = dbController;
         this.msgList = new CopyOnWriteArrayList<>();
         this.msgAdapter = new OtrosAdapterImpl();
+
+        setName("InsertFixMsgThread");
     }
 
     @Override

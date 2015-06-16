@@ -28,6 +28,8 @@ public class ErInsertThreadImpl extends Thread implements InsertErThread {
         this.dbController = dbController;
         this.erList = new CopyOnWriteArrayList<>();
         this.erAdapter = new ERAdapterImpl();
+
+        setName("ErInsertThread");
     }
 
     @Override

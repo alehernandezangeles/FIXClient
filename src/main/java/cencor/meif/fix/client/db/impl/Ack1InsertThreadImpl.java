@@ -28,6 +28,8 @@ public class Ack1InsertThreadImpl extends Thread implements InsertErThread {
         this.dbController = dbController;
         this.ack1List = new CopyOnWriteArrayList<>();
         this.ack1Adapter = new ACK1AdapterImpl();
+
+        setName("Ack1InsertThread");
     }
 
     @Override
