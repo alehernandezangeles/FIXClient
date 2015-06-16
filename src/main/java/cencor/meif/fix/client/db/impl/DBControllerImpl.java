@@ -185,6 +185,15 @@ public class DBControllerImpl implements DBController {
     }
 
     @Override
+    public int updateStatusSync(List<String> clOrdIdList, int estatus) throws SQLException {
+        int rows = editStatusNos(clOrdIdList, estatus);
+        if (rows != clOrdIdList.size()) {
+            rows += editStatusOcr(clOrdIdList, estatus);
+        }
+        return rows;
+    }
+
+    @Override
     public void editStatus(String clOrdId, int estatus, int estatusAck2, String descrAck2) throws Exception {
         NosEntity nosEntity = null;
         OcrEntity ocrEntity = null;

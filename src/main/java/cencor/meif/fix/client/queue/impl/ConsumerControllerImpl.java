@@ -4,7 +4,10 @@ import cencor.meif.fix.client.*;
 import cencor.meif.fix.client.db.DBController;
 import cencor.meif.fix.client.db.EstatusInfo;
 import cencor.meif.fix.client.db.UpdateStatusDemon;
-import cencor.meif.fix.client.jpa.entities.*;
+import cencor.meif.fix.client.jpa.entities.Ack2Entity;
+import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
+import cencor.meif.fix.client.jpa.entities.NosEntity;
+import cencor.meif.fix.client.jpa.entities.OcrEntity;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.log4j.Logger;
 import quickfix.CharField;
@@ -88,6 +91,7 @@ public class ConsumerControllerImpl implements Service {
                     fixMessage = (quickfix.Message) msgObj;
 
                     final quickfix.Message finalFixMessage = fixMessage;
+/*
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -99,6 +103,7 @@ public class ConsumerControllerImpl implements Service {
                             }
                         }
                     }).start();
+*/
 
                     if (fixMessage instanceof ExecutionReport) {
                         final ExecutionReport er = (ExecutionReport) fixMessage;
@@ -107,6 +112,7 @@ public class ConsumerControllerImpl implements Service {
                         if (ordStatus != null) {
                             if (ordStatus.getValue() == OrdStatus.PENDING_NEW || ordStatus.getValue() == OrdStatus.PENDING_CANCEL) { // ACK1
                                 final quickfix.Message finalFixMessage2 = fixMessage;
+/*
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -120,10 +126,12 @@ public class ConsumerControllerImpl implements Service {
                                         }
                                     }
                                 }).start();
+*/
                                 ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ACK1));
                             } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) { // ACK2
                                 final Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
                                 final quickfix.Message finalFixMessage3 = fixMessage;
+/*
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -136,11 +144,13 @@ public class ConsumerControllerImpl implements Service {
                                         }
                                     }
                                 }).start();
+*/
                                 int estatusAck2 = ack2Entity.getValido().intValue();
                                 String descrAck2 = ack2Entity.getMensajeError();
                                 ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ACK2, estatusAck2, descrAck2));
                             } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
                                 final quickfix.Message finalFixMessage1 = fixMessage;
+/*
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -154,6 +164,7 @@ public class ConsumerControllerImpl implements Service {
                                         }
                                     }
                                 }).start();
+*/
                                 ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ER));
                             }
                         }
