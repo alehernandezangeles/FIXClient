@@ -107,6 +107,23 @@ public class DBControllerImpl implements DBController {
     }
 
     @Override
+    public void createOtrosMsjFix(List<OtrosMsjFixEntity> otrosMsjFix) {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            for (OtrosMsjFixEntity otrosMsjFixEntity : otrosMsjFix) {
+                em.persist(otrosMsjFixEntity);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("Error while trying to persist " + otrosMsjFix, e);
+        } finally {
+            try { em.close(); } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+    @Override
     public void createAck1(Ack1Entity ack1Entity) throws Exception {
         ack1Controller.create(ack1Entity);
     }

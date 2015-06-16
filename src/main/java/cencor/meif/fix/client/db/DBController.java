@@ -21,6 +21,7 @@ public interface DBController {
     OcrEntity findOcrByClOrdId(String clOrdId);
 
     void createOtrosMsjFix(OtrosMsjFixEntity otrosMsjFixEntity) throws Exception;
+    void createOtrosMsjFix(List<OtrosMsjFixEntity> otrosMsjFix);
 
     void createAck1(Ack1Entity ack1Entity) throws Exception;
     void createAck1(List<Ack1Entity> ack1s);

@@ -1,10 +1,7 @@
 package cencor.meif.fix.client.queue.impl;
 
 import cencor.meif.fix.client.*;
-import cencor.meif.fix.client.db.DBController;
-import cencor.meif.fix.client.db.EstatusInfo;
-import cencor.meif.fix.client.db.InsertErThread;
-import cencor.meif.fix.client.db.UpdateStatusDemon;
+import cencor.meif.fix.client.db.*;
 import cencor.meif.fix.client.jpa.entities.Ack2Entity;
 import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import cencor.meif.fix.client.jpa.entities.NosEntity;
@@ -51,16 +48,18 @@ public class ConsumerControllerImpl implements Service {
     private InsertErThread erInsertThread;
     private InsertErThread ack1InsertThread;
     private InsertErThread ack2InsertThread;
+    private InsertFixMsgThread otrosMsgFixThread;
 
     private FixUtils fixUtils;
 
-    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController, UpdateStatusDemon updateStatusDemon, InsertErThread erInsertThread, InsertErThread ack1InsertThread, InsertErThread ack2InsertThread) throws JMSException {
+    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController, UpdateStatusDemon updateStatusDemon, InsertErThread erInsertThread, InsertErThread ack1InsertThread, InsertErThread ack2InsertThread, InsertFixMsgThread otrosMsgFixThread) throws JMSException {
         this.fixApp = fixApp;
         this.dbController = dbController;
         this.updateStatusDemon = updateStatusDemon;
         this.erInsertThread = erInsertThread;
         this.ack1InsertThread = ack1InsertThread;
         this.ack2InsertThread = ack2InsertThread;
+        this.otrosMsgFixThread = otrosMsgFixThread;
         this.nosAdapter = new NOSAdapterImpl();
         this.ocrAdapter = new OCRAdapterImpl();
         this.otrosAdapter = new OtrosAdapterImpl();
@@ -99,21 +98,7 @@ public class ConsumerControllerImpl implements Service {
             if (msgObj != null) {
                 if (msgObj instanceof quickfix.fix44.Message) {
                     fixMessage = (quickfix.Message) msgObj;
-
-                    final quickfix.Message finalFixMessage = fixMessage;
-/*
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            OtrosMsjFixEntity otrosMsjFixEntity = otrosAdapter.adapt(finalFixMessage);
-                            try {
-                                dbController.createOtrosMsjFix(otrosMsjFixEntity);
-                            } catch (Exception e) {
-                                logger.error("Error al pesistir en BD: " + otrosMsjFixEntity, e);
-                            }
-                        }
-                    }).start();
-*/
+                    otrosMsgFixThread.put(fixMessage);
 
                     if (fixMessage instanceof ExecutionReport) {
                         final ExecutionReport er = (ExecutionReport) fixMessage;

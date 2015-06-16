@@ -1,9 +1,6 @@
 package cencor.meif.fix.client;
 
-import cencor.meif.fix.client.db.DBController;
-import cencor.meif.fix.client.db.InsertErThread;
-import cencor.meif.fix.client.db.NewMsgObserver;
-import cencor.meif.fix.client.db.UpdateStatusDemon;
+import cencor.meif.fix.client.db.*;
 import cencor.meif.fix.client.db.impl.*;
 import cencor.meif.fix.client.queue.ProducerController;
 import cencor.meif.fix.client.queue.impl.ConsumerControllerImpl;
@@ -44,6 +41,7 @@ public class FixClientSvcImpl implements Service {
     private ProducerController producerController;
     private Service consumerController;
     private InsertErThread erInsertThread, ack1InsertThread, ack2InsertThread;
+    private InsertFixMsgThread otrosMsgFixThread;
     private Connection brokerConn;
 
     // FIX related
@@ -66,8 +64,10 @@ public class FixClientSvcImpl implements Service {
         erInsertThread = new ErInsertThreadImpl(dbController);
         ack1InsertThread = new Ack1InsertThreadImpl(dbController);
         ack2InsertThread = new Ack2InsertThreadImpl(dbController);
+        otrosMsgFixThread = new InsertFixMsgThreadImpl(dbController);
+
         fixApp.setProducerController(producerController);
-        consumerController = new ConsumerControllerImpl(brokerConn, fixApp, dbController, updateStatusDemon, erInsertThread, ack1InsertThread, ack2InsertThread);
+        consumerController = new ConsumerControllerImpl(brokerConn, fixApp, dbController, updateStatusDemon, erInsertThread, ack1InsertThread, ack2InsertThread, otrosMsgFixThread);
 
         newMsgObserver = new NewMsgObserver(dbController, producerController);
     }
@@ -95,6 +95,7 @@ public class FixClientSvcImpl implements Service {
         erInsertThread.start();
         ack1InsertThread.start();
         ack2InsertThread.start();
+        otrosMsgFixThread.start();
 
         // start observing for new orders
         newMsgObserver.start();
