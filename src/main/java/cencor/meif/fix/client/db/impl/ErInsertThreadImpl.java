@@ -3,7 +3,7 @@ package cencor.meif.fix.client.db.impl;
 import cencor.meif.fix.client.ERAdapter;
 import cencor.meif.fix.client.ERAdapterImpl;
 import cencor.meif.fix.client.db.DBController;
-import cencor.meif.fix.client.db.InsertThread;
+import cencor.meif.fix.client.db.InsertErThread;
 import cencor.meif.fix.client.jpa.entities.ErEntity;
 import org.apache.log4j.Logger;
 import quickfix.fix44.ExecutionReport;
@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by mhernandez on 6/16/15.
  */
-public class ErInsertThreadImpl extends Thread implements InsertThread {
+public class ErInsertThreadImpl extends Thread implements InsertErThread {
     private static Logger logger = Logger.getLogger(ErInsertThreadImpl.class);
 
     private DBController dbController;

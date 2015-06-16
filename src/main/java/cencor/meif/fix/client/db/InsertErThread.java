@@ -6,6 +6,6 @@ import quickfix.fix44.ExecutionReport;
 /**
  * Created by mhernandez on 6/16/15.
  */
-public interface InsertThread extends Service {
+public interface InsertErThread extends Service {
     void put(ExecutionReport er);
 }

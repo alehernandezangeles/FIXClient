@@ -3,7 +3,7 @@ package cencor.meif.fix.client.db.impl;
 import cencor.meif.fix.client.ACK1Adapter;
 import cencor.meif.fix.client.ACK1AdapterImpl;
 import cencor.meif.fix.client.db.DBController;
-import cencor.meif.fix.client.db.InsertThread;
+import cencor.meif.fix.client.db.InsertErThread;
 import cencor.meif.fix.client.jpa.entities.Ack1Entity;
 import org.apache.log4j.Logger;
 import quickfix.fix44.ExecutionReport;
@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by mhernandez on 6/16/15.
  */
-public class Ack1InsertThreadImpl extends Thread implements InsertThread {
+public class Ack1InsertThreadImpl extends Thread implements InsertErThread {
     private static Logger logger = Logger.getLogger(Ack1InsertThreadImpl.class);
 
     private DBController dbController;

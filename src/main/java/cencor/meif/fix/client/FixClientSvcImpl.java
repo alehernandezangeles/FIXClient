@@ -1,7 +1,7 @@
 package cencor.meif.fix.client;
 
 import cencor.meif.fix.client.db.DBController;
-import cencor.meif.fix.client.db.InsertThread;
+import cencor.meif.fix.client.db.InsertErThread;
 import cencor.meif.fix.client.db.NewMsgObserver;
 import cencor.meif.fix.client.db.UpdateStatusDemon;
 import cencor.meif.fix.client.db.impl.*;
@@ -43,7 +43,7 @@ public class FixClientSvcImpl implements Service {
     // Broker related
     private ProducerController producerController;
     private Service consumerController;
-    private InsertThread erInsertThread, ack1InsertThread, ack2InsertThread;
+    private InsertErThread erInsertThread, ack1InsertThread, ack2InsertThread;
     private Connection brokerConn;
 
     // FIX related

@@ -3,7 +3,7 @@ package cencor.meif.fix.client.queue.impl;
 import cencor.meif.fix.client.*;
 import cencor.meif.fix.client.db.DBController;
 import cencor.meif.fix.client.db.EstatusInfo;
-import cencor.meif.fix.client.db.InsertThread;
+import cencor.meif.fix.client.db.InsertErThread;
 import cencor.meif.fix.client.db.UpdateStatusDemon;
 import cencor.meif.fix.client.jpa.entities.Ack2Entity;
 import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
@@ -48,13 +48,13 @@ public class ConsumerControllerImpl implements Service {
     private FixApp fixApp;
     private DBController dbController;
     private UpdateStatusDemon updateStatusDemon;
-    private InsertThread erInsertThread;
-    private InsertThread ack1InsertThread;
-    private InsertThread ack2InsertThread;
+    private InsertErThread erInsertThread;
+    private InsertErThread ack1InsertThread;
+    private InsertErThread ack2InsertThread;
 
     private FixUtils fixUtils;
 
-    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController, UpdateStatusDemon updateStatusDemon, InsertThread erInsertThread, InsertThread ack1InsertThread, InsertThread ack2InsertThread) throws JMSException {
+    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController, UpdateStatusDemon updateStatusDemon, InsertErThread erInsertThread, InsertErThread ack1InsertThread, InsertErThread ack2InsertThread) throws JMSException {
         this.fixApp = fixApp;
         this.dbController = dbController;
         this.updateStatusDemon = updateStatusDemon;
