@@ -36,7 +36,7 @@ public class HistDelete {
     @Test
     public void deleteNos() {
         try {
-            int rows = controller.deleteHist(DB_NAME, "NOS");
+            int rows = controller.deleteData(DB_NAME, "NOS");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -46,7 +46,7 @@ public class HistDelete {
     @Test
     public void deleteOcr() {
         try {
-            int rows = controller.deleteHist(DB_NAME, "OCR");
+            int rows = controller.deleteData(DB_NAME, "OCR");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -56,7 +56,7 @@ public class HistDelete {
     @Test
     public void deleteEr() {
         try {
-            int rows = controller.deleteHist(DB_NAME, "ER");
+            int rows = controller.deleteData(DB_NAME, "ER");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class HistDelete {
     @Test
     public void deleteAck1() {
         try {
-            int rows = controller.deleteHist(DB_NAME, "ACK1");
+            int rows = controller.deleteData(DB_NAME, "ACK1");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -76,7 +76,7 @@ public class HistDelete {
     @Test
     public void deleteAck2() {
         try {
-            int rows = controller.deleteHist(DB_NAME, "ACK2");
+            int rows = controller.deleteData(DB_NAME, "ACK2");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,7 +86,7 @@ public class HistDelete {
     @Test
     public void deleteErrores() {
         try {
-            int rows = controller.deleteHist(DB_NAME, "Errores");
+            int rows = controller.deleteData(DB_NAME, "Errores");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,7 +96,7 @@ public class HistDelete {
     @Test
     public void deleteOtrosMsjFix() {
         try {
-            int rows = controller.deleteHist(DB_NAME, "OtrosMsjFix");
+            int rows = controller.deleteData(DB_NAME, "OtrosMsjFix");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();

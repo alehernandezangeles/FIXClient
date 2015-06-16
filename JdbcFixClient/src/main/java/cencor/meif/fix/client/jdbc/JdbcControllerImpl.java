@@ -71,16 +71,22 @@ public class JdbcControllerImpl implements JdbcController {
     }
 
     @Override
-    public void moveToHist() {
-        // Copy data
-
-
-        // Delete data
+    public void moveData(String dbSource, String dbTarget, List<String> tblNames) {
+        for (String tblName : tblNames) {
+            try {
+                // Copy data
+                copyData(dbSource, dbTarget, tblName);
+                // Delete data
+                deleteData(dbSource, tblName);
+            } catch (SQLException e) {
+                logger.error("Error while moving data from " + dbSource + " to " + dbTarget + " on table " + tblName, e);
+            }
+        }
     }
 
     @Override
-    public int copyHist(String dbSource, String dbtarget, String tblName) throws SQLException {
-        logger.info("Begin to copyHist: " + dbSource + ", " + dbtarget + ", " + tblName);
+    public int copyData(String dbSource, String dbtarget, String tblName) throws SQLException {
+        logger.info("Begin to copyData: " + dbSource + ", " + dbtarget + ", " + tblName);
         String sql = null;
         if (tblName.equals("NOS") || tblName.equals("OCR") || tblName.equals("ER")) {
             sql = "INSERT INTO " + dbtarget + "." + tblName + " (\n" +
@@ -98,13 +104,13 @@ public class JdbcControllerImpl implements JdbcController {
         if (pstmt != null) {
             pstmt.close();
         }
-        logger.info("Ended copyHist: " + dbSource + ", " + dbtarget + ", " + tblName + ". Rows copied: " + rows);
+        logger.info("Ended copyData: " + dbSource + ", " + dbtarget + ", " + tblName + ". Rows copied: " + rows);
         return rows;
     }
 
     @Override
-    public int deleteHist(String dbName, String tblName) throws SQLException {
-        logger.info("Begin to deleteHist: " + dbName + ", " + tblName);
+    public int deleteData(String dbName, String tblName) throws SQLException {
+        logger.info("Begin to deleteData: " + dbName + ", " + tblName);
         String sql = null;
         if (tblName.equals("NOS") || tblName.equals("OCR") || tblName.equals("ER")) {
             sql = "\tDELETE FROM " + dbName + "." + tblName + " WHERE DATE(TransactTime) < CURDATE()";
@@ -117,7 +123,7 @@ public class JdbcControllerImpl implements JdbcController {
         if (pstmt != null) {
             pstmt.close();
         }
-        logger.info("Ended deleteHist: " + dbName + ", " + tblName + ". Rows deleted: " + rows);
+        logger.info("Ended deleteData: " + dbName + ", " + tblName + ". Rows deleted: " + rows);
         return rows;
 
     }

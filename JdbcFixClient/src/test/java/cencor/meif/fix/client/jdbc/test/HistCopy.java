@@ -36,7 +36,7 @@ public class HistCopy {
     @Test
     public void copyNos() {
         try {
-            int rows = controller.copyHist(DB_SOURCE, DB_TARGET, "NOS");
+            int rows = controller.copyData(DB_SOURCE, DB_TARGET, "NOS");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -46,7 +46,7 @@ public class HistCopy {
     @Test
     public void copyOcr() {
         try {
-            int rows = controller.copyHist(DB_SOURCE, DB_TARGET, "OCR");
+            int rows = controller.copyData(DB_SOURCE, DB_TARGET, "OCR");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -56,7 +56,7 @@ public class HistCopy {
     @Test
     public void copyEr() {
         try {
-            int rows = controller.copyHist(DB_SOURCE, DB_TARGET, "ER");
+            int rows = controller.copyData(DB_SOURCE, DB_TARGET, "ER");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class HistCopy {
     @Test
     public void copyAck1() {
         try {
-            int rows = controller.copyHist(DB_SOURCE, DB_TARGET, "ACK1");
+            int rows = controller.copyData(DB_SOURCE, DB_TARGET, "ACK1");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -76,7 +76,7 @@ public class HistCopy {
     @Test
     public void copyAck2() {
         try {
-            int rows = controller.copyHist(DB_SOURCE, DB_TARGET, "ACK2");
+            int rows = controller.copyData(DB_SOURCE, DB_TARGET, "ACK2");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,7 +86,7 @@ public class HistCopy {
     @Test
     public void copyErrores() {
         try {
-            int rows = controller.copyHist(DB_SOURCE, DB_TARGET, "Errores");
+            int rows = controller.copyData(DB_SOURCE, DB_TARGET, "Errores");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,7 +96,7 @@ public class HistCopy {
     @Test
     public void copyOtrosMsjFix() {
         try {
-            int rows = controller.copyHist(DB_SOURCE, DB_TARGET, "OtrosMsjFix");
+            int rows = controller.copyData(DB_SOURCE, DB_TARGET, "OtrosMsjFix");
             System.out.println("Rows: " + rows);
         } catch (SQLException e) {
             e.printStackTrace();
