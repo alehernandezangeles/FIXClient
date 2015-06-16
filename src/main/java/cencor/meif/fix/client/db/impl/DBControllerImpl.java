@@ -16,6 +16,7 @@ import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.ClOrdID;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
@@ -111,13 +112,64 @@ public class DBControllerImpl implements DBController {
     }
 
     @Override
+    public void createAck1(List<Ack1Entity> ack1s) {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            for (Ack1Entity ack1 : ack1s) {
+                em.persist(ack1);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("Error while trying to persist " + ack1s, e);
+        } finally {
+            try { em.close(); } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+    @Override
     public void createAck2(Ack2Entity ack2Entity) throws Exception {
         ack2Controller.create(ack2Entity);
     }
 
     @Override
+    public void createAck2(List<Ack2Entity> ack2s) {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            for (Ack2Entity ack2 : ack2s) {
+                em.persist(ack2);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("Error while trying to persist " + ack2s, e);
+        } finally {
+            try { em.close(); } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
+
+    @Override
     public void createEr(ErEntity erEntity) {
         erController.create(erEntity);
+    }
+
+    @Override
+    public void createEr(List<ErEntity> ers) {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            for (ErEntity er : ers) {
+                em.persist(er);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("Error while trying to persist " + ers, e);
+        } finally {
+            try { em.close(); } catch (Exception e) { e.printStackTrace(); }
+        }
     }
 
     @Override

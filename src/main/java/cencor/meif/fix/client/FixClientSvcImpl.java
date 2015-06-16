@@ -1,10 +1,10 @@
 package cencor.meif.fix.client;
 
 import cencor.meif.fix.client.db.DBController;
+import cencor.meif.fix.client.db.InsertThread;
 import cencor.meif.fix.client.db.NewMsgObserver;
 import cencor.meif.fix.client.db.UpdateStatusDemon;
-import cencor.meif.fix.client.db.impl.DBControllerImpl;
-import cencor.meif.fix.client.db.impl.UpdateStatusDemonImpl;
+import cencor.meif.fix.client.db.impl.*;
 import cencor.meif.fix.client.queue.ProducerController;
 import cencor.meif.fix.client.queue.impl.ConsumerControllerImpl;
 import cencor.meif.fix.client.queue.impl.ProducerControllerImpl;
@@ -43,6 +43,7 @@ public class FixClientSvcImpl implements Service {
     // Broker related
     private ProducerController producerController;
     private Service consumerController;
+    private InsertThread erInsertThread, ack1InsertThread, ack2InsertThread;
     private Connection brokerConn;
 
     // FIX related
@@ -62,8 +63,11 @@ public class FixClientSvcImpl implements Service {
         brokerConn = brokerCF.createConnection();
         brokerConn.start();
         producerController = new ProducerControllerImpl(brokerConn);
+        erInsertThread = new ErInsertThreadImpl(dbController);
+        ack1InsertThread = new Ack1InsertThreadImpl(dbController);
+        ack2InsertThread = new Ack2InsertThreadImpl(dbController);
         fixApp.setProducerController(producerController);
-        consumerController = new ConsumerControllerImpl(brokerConn, fixApp, dbController, updateStatusDemon);
+        consumerController = new ConsumerControllerImpl(brokerConn, fixApp, dbController, updateStatusDemon, erInsertThread, ack1InsertThread, ack2InsertThread);
 
         newMsgObserver = new NewMsgObserver(dbController, producerController);
     }
@@ -88,6 +92,9 @@ public class FixClientSvcImpl implements Service {
 
         // start listening for new messages in queue
         consumerController.start();
+        erInsertThread.start();
+        ack1InsertThread.start();
+        ack2InsertThread.start();
 
         // start observing for new orders
         newMsgObserver.start();

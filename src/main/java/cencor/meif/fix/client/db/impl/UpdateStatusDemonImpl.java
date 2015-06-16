@@ -63,7 +63,7 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
                             }
                             updateEstatus(estatusClassifier);
                         }
-                        logger.info("Queue size: " + UpdateStatusDemonImpl.this.estatusInfoMap.size());
+                        logger.info("Update Status Demon Queue size: " + UpdateStatusDemonImpl.this.estatusInfoMap.size());
                         Thread.sleep(SLEEP_TIME);
                     }
                 } catch (InterruptedException e) {

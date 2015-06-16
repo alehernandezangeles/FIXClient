@@ -3,11 +3,13 @@ package cencor.meif.fix.client.queue.impl;
 import cencor.meif.fix.client.*;
 import cencor.meif.fix.client.db.DBController;
 import cencor.meif.fix.client.db.EstatusInfo;
+import cencor.meif.fix.client.db.InsertThread;
 import cencor.meif.fix.client.db.UpdateStatusDemon;
 import cencor.meif.fix.client.jpa.entities.Ack2Entity;
 import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import cencor.meif.fix.client.jpa.entities.NosEntity;
 import cencor.meif.fix.client.jpa.entities.OcrEntity;
+import cencor.meif.fix.client.queue.QueueUtils;
 import org.apache.activemq.command.ActiveMQObjectMessage;
 import org.apache.log4j.Logger;
 import quickfix.CharField;
@@ -28,6 +30,7 @@ public class ConsumerControllerImpl implements Service {
 
     private Connection connection;
     private Session session;
+    private QueueUtils queueUtils;
 
     private MessageConsumer reqConsumer;
     private Destination reqDestination;
@@ -45,13 +48,19 @@ public class ConsumerControllerImpl implements Service {
     private FixApp fixApp;
     private DBController dbController;
     private UpdateStatusDemon updateStatusDemon;
+    private InsertThread erInsertThread;
+    private InsertThread ack1InsertThread;
+    private InsertThread ack2InsertThread;
 
     private FixUtils fixUtils;
 
-    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController, UpdateStatusDemon updateStatusDemon) throws JMSException {
+    public ConsumerControllerImpl(Connection brokerConn, FixApp fixApp, DBController dbController, UpdateStatusDemon updateStatusDemon, InsertThread erInsertThread, InsertThread ack1InsertThread, InsertThread ack2InsertThread) throws JMSException {
         this.fixApp = fixApp;
         this.dbController = dbController;
         this.updateStatusDemon = updateStatusDemon;
+        this.erInsertThread = erInsertThread;
+        this.ack1InsertThread = ack1InsertThread;
+        this.ack2InsertThread = ack2InsertThread;
         this.nosAdapter = new NOSAdapterImpl();
         this.ocrAdapter = new OCRAdapterImpl();
         this.otrosAdapter = new OtrosAdapterImpl();
@@ -61,6 +70,7 @@ public class ConsumerControllerImpl implements Service {
 
         this.connection = brokerConn;
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        this.queueUtils = new QueueUtilsImpl();
 
         this.reqDestination = session.createQueue(FixClientSvcImpl.REQ_QUEUE_NAME);
         this.reqConsumer = session.createConsumer(reqDestination);
@@ -85,7 +95,7 @@ public class ConsumerControllerImpl implements Service {
         @Override
         public void onMessage(Message message) {
             quickfix.Message fixMessage = null;
-            Serializable msgObj = getObject((ActiveMQObjectMessage) message);
+            Serializable msgObj = ConsumerControllerImpl.this.queueUtils.getObject((ActiveMQObjectMessage) message);
             if (msgObj != null) {
                 if (msgObj instanceof quickfix.fix44.Message) {
                     fixMessage = (quickfix.Message) msgObj;
@@ -111,65 +121,21 @@ public class ConsumerControllerImpl implements Service {
                         String clOrdId = fixUtils.get(fixMessage, new ClOrdID()).getValue();
                         if (ordStatus != null) {
                             if (ordStatus.getValue() == OrdStatus.PENDING_NEW || ordStatus.getValue() == OrdStatus.PENDING_CANCEL) { // ACK1
-                                final quickfix.Message finalFixMessage2 = fixMessage;
-/*
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Ack1Entity ack1Entity = ConsumerControllerImpl.this.ack1Adapter.adapt(er);
-                                        try {
-                                            dbController.createAck1(ack1Entity);
-                                        } catch (Exception e) {
-                                            String errorMsg = "Error al pesistir en BD: " + ack1Entity;
-                                            logger.error(errorMsg, e);
-                                            dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage2);
-                                        }
-                                    }
-                                }).start();
-*/
+                                ack1InsertThread.put(er);
                                 ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ACK1));
                             } else if (ordStatus.getValue() == OrdStatus.FILLED || ordStatus.getValue() == OrdStatus.REJECTED) { // ACK2
+                                ack2InsertThread.put(er);
+
                                 final Ack2Entity ack2Entity = ConsumerControllerImpl.this.ack2Adapter.adapt(er);
-                                final quickfix.Message finalFixMessage3 = fixMessage;
-/*
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            dbController.createAck2(ack2Entity);
-                                        } catch (Exception e) {
-                                            String errorMsg = "Error al pesistir en BD: " + ack2Entity;
-                                            logger.error(errorMsg, e);
-                                            dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage3);
-                                        }
-                                    }
-                                }).start();
-*/
                                 int estatusAck2 = ack2Entity.getValido().intValue();
                                 String descrAck2 = ack2Entity.getMensajeError();
                                 ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ACK2, estatusAck2, descrAck2));
                             } else if (ordStatus.getValue() == OrdStatus.NEW || ordStatus.getValue() == OrdStatus.CANCELED) { // ER
-                                final quickfix.Message finalFixMessage1 = fixMessage;
-/*
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ErEntity erEntity = erAdapter.adapt(er);
-                                        try {
-                                            dbController.createEr(erEntity);
-                                        } catch (Exception e) {
-                                            String errorMsg = "Error al pesistir en BD: " + erEntity;
-                                            logger.error(errorMsg, e);
-                                            dbController.createErrorUpdateEstatus(errorMsg, e, finalFixMessage1);
-                                        }
-                                    }
-                                }).start();
-*/
+                                erInsertThread.put(er);
                                 ConsumerControllerImpl.this.updateStatusDemon.add(new EstatusInfo(clOrdId, CatEstatusEntity.ER));
                             }
                         }
                     }
-
                 }
             }
         }
@@ -179,7 +145,7 @@ public class ConsumerControllerImpl implements Service {
         @Override
         public void onMessage(Message message) {
             quickfix.fix44.Message fixMessage = null;
-            Serializable entity = getObject((ActiveMQObjectMessage) message);
+            Serializable entity = ConsumerControllerImpl.this.queueUtils.getObject((ActiveMQObjectMessage) message);
             if (entity != null) {
                 if (entity instanceof NosEntity) {
                     NosEntity nosEntity = (NosEntity) entity;
@@ -211,15 +177,5 @@ public class ConsumerControllerImpl implements Service {
                 }
             }
         }
-    }
-
-    private Serializable getObject(ActiveMQObjectMessage message) {
-        Serializable entity = null;
-        try {
-            entity = message.getObject();
-        } catch (JMSException e) {
-            logger.error("Error retrieving message from queue " + FixClientSvcImpl.REQ_QUEUE_NAME, e);
-        }
-        return entity;
     }
 }

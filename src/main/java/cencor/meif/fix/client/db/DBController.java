@@ -23,10 +23,14 @@ public interface DBController {
     void createOtrosMsjFix(OtrosMsjFixEntity otrosMsjFixEntity) throws Exception;
 
     void createAck1(Ack1Entity ack1Entity) throws Exception;
+    void createAck1(List<Ack1Entity> ack1s);
 
     void createAck2(Ack2Entity ack2Entity) throws Exception;
+    void createAck2(List<Ack2Entity> ack2s);
 
     void createEr(ErEntity erEntity);
+
+    void createEr(List<ErEntity> ers);
 
     void editStatus(String clOrdId, int estatus) throws Exception;
     void editStatusNos(String clOrdId, int estatus) throws Exception;
