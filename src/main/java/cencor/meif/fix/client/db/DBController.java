@@ -3,12 +3,16 @@ package cencor.meif.fix.client.db;
 import cencor.meif.fix.client.jpa.entities.*;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by alejandro on 5/31/15.
  */
 public interface DBController {
+
+    String DB_OPERATIONAL ="FixClientDB", DB_HISTORIC ="FixClientHistDB";
+    List<String> TBL_NAMES = Arrays.asList("ACK1", "ACK2", "ER", "Errores", "NOS", "OCR", "OtrosMsjFix");
 
     List<NosEntity> getNewNos();
 
@@ -48,4 +52,6 @@ public interface DBController {
     void createError(ErroresEntity erroresEntity) throws Exception;
 
     void createErrorUpdateEstatus(String errorMsg, Throwable t, Object fixMsg);
+
+    void moveToHistoricDB();
 }

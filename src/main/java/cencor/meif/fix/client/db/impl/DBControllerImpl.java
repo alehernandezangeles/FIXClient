@@ -326,4 +326,9 @@ public class DBControllerImpl implements DBController {
             }
         }
     }
+
+    @Override
+    public void moveToHistoricDB() {
+        jdbcController.moveData(DB_OPERATIONAL, DB_HISTORIC, TBL_NAMES);
+    }
 }

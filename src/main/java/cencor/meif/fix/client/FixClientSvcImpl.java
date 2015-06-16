@@ -36,6 +36,7 @@ public class FixClientSvcImpl implements Service {
     private DBController dbController;
     private NewMsgObserver newMsgObserver;
     private UpdateStatusDemon updateStatusDemon;
+    private MoveToHistServiceImpl moveToHistService;
 
     // Broker related
     private ProducerController producerController;
@@ -56,6 +57,7 @@ public class FixClientSvcImpl implements Service {
         initFixClient();
         dbController = new DBControllerImpl();
         updateStatusDemon = new UpdateStatusDemonImpl(dbController);
+        moveToHistService = new MoveToHistServiceImpl(dbController);
 
         ConnectionFactory brokerCF = new ActiveMQConnectionFactory(BROKER_URL);
         brokerConn = brokerCF.createConnection();
@@ -89,6 +91,7 @@ public class FixClientSvcImpl implements Service {
         startFixConn();
 
         updateStatusDemon.start();
+        moveToHistService.start();
 
         // start listening for new messages in queue
         consumerController.start();
