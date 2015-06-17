@@ -12,6 +12,7 @@ import quickfix.*;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,7 @@ public class FixClientSvcImpl implements Service {
     public static final String BROKER_URL = "vm://localhost";
     public static final String REQ_QUEUE_NAME = "FIX.IN";
     public static final String RESP_QUEUE_NAME = "FIX.OUT";
-    public static final String FIX_CFG_FILE = "DistFixConn.cfg";
+    public static final String FIX_CFG_FILE = "Meif_fix.cfg";
     public static final String PROPS_FILE = "fixclient.properties";
 
     private static Logger loggger = Logger.getLogger(FixClientSvcImpl.class);
@@ -49,12 +50,12 @@ public class FixClientSvcImpl implements Service {
     private SocketInitiator socketInitiator;
     private FixApp fixApp;
 
-    public FixClientSvcImpl() throws JMSException, IOException, ConfigError {
-        initResources();
+    public FixClientSvcImpl(String fixCfgFile) throws JMSException, IOException, ConfigError {
+        initResources(fixCfgFile);
     }
 
-    private void initResources() throws JMSException, IOException, ConfigError {
-        initFixClient();
+    private void initResources(String fixCfgFile) throws JMSException, IOException, ConfigError {
+        initFixClient(fixCfgFile);
         dbController = new DBControllerImpl();
         updateStatusDemon = new UpdateStatusDemonImpl(dbController);
         moveToHistService = new MoveToHistServiceImpl(dbController);
@@ -74,9 +75,11 @@ public class FixClientSvcImpl implements Service {
         newMsgObserver = new NewMsgObserver(dbController, producerController);
     }
 
-    private void initFixClient() throws IOException, ConfigError {
+    private void initFixClient(String fixCfgFile) throws IOException, ConfigError {
         fixApp = new FixApp();
-        InputStream is = new FileInputStream(FIX_CFG_FILE);
+        File fixCfgFileObj = new File(fixCfgFile);
+        loggger.info("Using fix cfg file " + fixCfgFileObj.getAbsolutePath());
+        InputStream is = new FileInputStream(fixCfgFileObj);
         SessionSettings sessionSettings = new SessionSettings(is);
         is.close();
 
@@ -118,9 +121,17 @@ public class FixClientSvcImpl implements Service {
     }
 
     public static void main(String[] args) throws IOException, JMSException, ConfigError {
+        String fixCfgFile = FIX_CFG_FILE;
+        if (args.length > 1) {
+            System.out.println("Usage: FixClientSvcImpl [Meif_fix.cfg]");
+            System.exit(0);
+        } else if (args.length == 1) {
+            fixCfgFile = args[0];
+        }
+
         fixClientProps.load(new FileInputStream(PROPS_FILE));
 
-        Service fixClientSvc = new FixClientSvcImpl();
+        Service fixClientSvc = new FixClientSvcImpl(fixCfgFile);
         fixClientSvc.start();
     }
 

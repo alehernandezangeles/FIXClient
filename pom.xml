@@ -6,18 +6,18 @@
 
     <groupId>cencor.meif.fix</groupId>
     <artifactId>FixClient</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <dependencies>
         <dependency>
             <groupId>cencor.meif.fix</groupId>
             <artifactId>JpaFixClient</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>cencor.meif.fix</groupId>
             <artifactId>JdbcFixClient</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
