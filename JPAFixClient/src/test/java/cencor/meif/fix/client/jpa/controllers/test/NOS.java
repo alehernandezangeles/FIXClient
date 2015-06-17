@@ -132,7 +132,6 @@ public class NOS {
         for (int i = 0; i < 100; i++) {
             Date date = new Date();
 
-            NosEntityJpaController controller = new NosEntityJpaController(emf);
             NosEntity nosEntity = new NosEntity();
             nosEntity.setEstatus(CatEstatusEntity.NUEVO);
             nosEntity.setAccount("Account");
