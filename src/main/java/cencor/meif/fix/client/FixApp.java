@@ -18,6 +18,14 @@ public class FixApp implements Application {
     private boolean connected;
     private SessionID sessionID;
     private ProducerController producerController;
+    private String fixUser;
+    private String fixPwd;
+
+    public FixApp(String fixUser, String fixPwd) {
+
+        this.fixUser = fixUser;
+        this.fixPwd = fixPwd;
+    }
 
     @Override
     public void onCreate(SessionID sessionID) {
@@ -38,8 +46,8 @@ public class FixApp implements Application {
     public void toAdmin(Message message, SessionID sessionID) {
         sendToQueue(message);
         if (message instanceof Logon) {
-            String user = FixClientSvcImpl.fixClientProps.getProperty("fix.user");
-            String pwd = FixClientSvcImpl.fixClientProps.getProperty("fix.pwd");
+            String user = this.fixUser;
+            String pwd = this.fixPwd;
             Logon logon = (Logon) message;
             logon.set(new Username(user));
             logon.set(new Password(pwd));

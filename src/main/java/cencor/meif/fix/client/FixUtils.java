@@ -16,6 +16,8 @@ public interface FixUtils {
     DoubleField get(Message message, DoubleField doubleField);
     UtcTimeStampField get(Message message, UtcTimeStampField utcTimeStampField);
 
+    String getCfgFileParam(SessionSettings sessionSettings, String paramName);
+
     List<String> getClOrdIdListNos(List<NosEntity> nosEntities);
     List<String> getClOrdIdListOcr(List<OcrEntity> ocrEntities);
 

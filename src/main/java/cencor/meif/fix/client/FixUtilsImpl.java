@@ -76,6 +76,18 @@ public class FixUtilsImpl implements FixUtils {
     }
 
     @Override
+    public String getCfgFileParam(SessionSettings sessionSettings, String paramName) {
+        String fixSetting = null;
+        try {
+            fixSetting = sessionSettings.getString(paramName);
+        } catch (Exception e) {
+            logger.error("Error al obtener valor del parámetros de configuración " + paramName, e);
+        }
+
+        return fixSetting;
+    }
+
+    @Override
     public List<String> getClOrdIdListNos(List<NosEntity> nosEntities) {
         List<String> clOrdIdListNos = new ArrayList<>();
         for (NosEntity nosEntity : nosEntities) {

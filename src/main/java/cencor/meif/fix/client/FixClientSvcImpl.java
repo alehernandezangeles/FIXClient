@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * Created by alejandro on 5/30/15.
@@ -27,11 +26,11 @@ public class FixClientSvcImpl implements Service {
     public static final String REQ_QUEUE_NAME = "FIX.IN";
     public static final String RESP_QUEUE_NAME = "FIX.OUT";
     public static final String FIX_CFG_FILE = "Meif_fix.cfg";
-    public static final String PROPS_FILE = "fixclient.properties";
+    public static final String FIX_SESSION_USER = "FixSessionUser";
+    private static final String FIX_SESSION_PWD = "FixSessionPwd";
 
-    private static Logger loggger = Logger.getLogger(FixClientSvcImpl.class);
+    private static Logger logger = Logger.getLogger(FixClientSvcImpl.class);
 
-    public static Properties fixClientProps = new Properties();
 
     // DB related
     private DBController dbController;
@@ -76,12 +75,16 @@ public class FixClientSvcImpl implements Service {
     }
 
     private void initFixClient(String fixCfgFile) throws IOException, ConfigError {
-        fixApp = new FixApp();
         File fixCfgFileObj = new File(fixCfgFile);
-        loggger.info("Using fix cfg file " + fixCfgFileObj.getAbsolutePath());
+        logger.info("Using fix cfg file " + fixCfgFileObj.getAbsolutePath());
         InputStream is = new FileInputStream(fixCfgFileObj);
         SessionSettings sessionSettings = new SessionSettings(is);
         is.close();
+
+        FixUtils fixUtils = new FixUtilsImpl();
+        String fixUser = fixUtils.getCfgFileParam(sessionSettings, FIX_SESSION_USER);
+        String fixPwd = fixUtils.getCfgFileParam(sessionSettings, FIX_SESSION_PWD);
+        fixApp = new FixApp(fixUser, fixPwd);
 
         socketInitiator = new SocketInitiator(fixApp, new MemoryStoreFactory(), sessionSettings, new ScreenLogFactory(), new DefaultMessageFactory());
     }
@@ -116,7 +119,7 @@ public class FixClientSvcImpl implements Service {
                 catch (InterruptedException e) { e.printStackTrace(); }
             }
         } catch (ConfigError configError) {
-            loggger.error("Error al conectarse con el servidor FIX", configError);
+            logger.error("Error al conectarse con el servidor FIX", configError);
         }
     }
 
@@ -128,8 +131,6 @@ public class FixClientSvcImpl implements Service {
         } else if (args.length == 1) {
             fixCfgFile = args[0];
         }
-
-        fixClientProps.load(new FileInputStream(PROPS_FILE));
 
         Service fixClientSvc = new FixClientSvcImpl(fixCfgFile);
         fixClientSvc.start();
