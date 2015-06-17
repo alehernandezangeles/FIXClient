@@ -2,8 +2,8 @@ package cencor.meif.fix.client.jdbc;
 
 import org.apache.log4j.Logger;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -25,7 +25,8 @@ public class JdbcControllerImpl implements JdbcController {
 
     public JdbcControllerImpl() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, SQLException {
         Properties props = new Properties();
-        props.load(new FileInputStream("jdbc.properties"));
+        InputStream jdbcIS = JdbcControllerImpl.class.getClassLoader().getResourceAsStream("jdbc.properties");
+        props.load(jdbcIS);
         String url = props.getProperty("db.url");
         String user = props.getProperty("db.user");
         String pwd = props.getProperty("db.pwd");
