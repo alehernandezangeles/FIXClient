@@ -1,15 +1,14 @@
 package cencor.meif.fix.client.db.impl;
 
-import cencor.meif.fix.client.db.DBController;
-import cencor.meif.fix.client.db.EstatusInfo;
-import cencor.meif.fix.client.db.EstatusInfoClassifier;
-import cencor.meif.fix.client.db.UpdateStatusDemon;
+import cencor.meif.fix.client.db.*;
 import cencor.meif.fix.client.jpa.entities.CatEstatusEntity;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by mhernandez on 6/12/15.
@@ -19,12 +18,13 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
     public static final int SLEEP_TIME = 1000;
     private static Logger logger = Logger.getLogger(UpdateStatusDemonImpl.class);
     private ConcurrentHashMap<String, EstatusInfo> estatusInfoMap;
-    private boolean stop;
+    private ConcurrentLinkedQueue<EstatusAck2Info> estatusAck2InfoQueue;
     private DBController dbController;
 
     public UpdateStatusDemonImpl(DBController dbController) {
         this.dbController = dbController;
         estatusInfoMap = new ConcurrentHashMap<>();
+        estatusAck2InfoQueue = new ConcurrentLinkedQueue<>();
     }
 
     @Override
@@ -38,6 +38,14 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
             estatusInfoOld.setEstatus(newStatus);
             estatusInfoOld.setPersisted(false);
         }
+
+        if (newStatus == CatEstatusEntity.ACK2) {
+            int estatusAck2 = estatusInfo.getEstatusAck2();
+            String descrEstatusAck2 = estatusInfo.getDescrEstatusAck2();
+
+            EstatusAck2Info estatusAck2Info = new EstatusAck2Info(clOrdId, estatusAck2, descrEstatusAck2);
+            estatusAck2InfoQueue.add(estatusAck2Info);
+        }
     }
 
     @Override
@@ -45,30 +53,31 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    while (true) {
-                        if (!estatusInfoMap.isEmpty()) {
-                            EstatusInfoClassifier estatusClassifier = new EstatusInfoClassifierImpl();
-                            Collection<EstatusInfo> estatusInfos = estatusInfoMap.values();
-                            for (final EstatusInfo estatusInfo : estatusInfos) {
-                                synchronized (estatusInfo) {
-                                    if (!estatusInfo.isPersisted()) {
-                                        estatusClassifier.classify(estatusInfo);
-                                        estatusInfo.setPersisted(true);
-                                        if (estatusInfo.getEstatus() == CatEstatusEntity.ER || (estatusInfo.getEstatus() == CatEstatusEntity.ACK2 && estatusInfo.getEstatusAck2() == 0) || estatusInfo.getEstatus() == CatEstatusEntity.ERROR) {
-                                            UpdateStatusDemonImpl.this.estatusInfoMap.remove(estatusInfo.getClOrdId());
-                                        }
+                while (true) {
+                    if (!estatusInfoMap.isEmpty()) {
+                        EstatusInfoClassifier estatusClassifier = new EstatusInfoClassifierImpl();
+                        Collection<EstatusInfo> estatusInfos = estatusInfoMap.values();
+                        for (final EstatusInfo estatusInfo : estatusInfos) {
+                            synchronized (estatusInfo) {
+                                if (!estatusInfo.isPersisted()) {
+                                    estatusClassifier.classify(estatusInfo);
+                                    estatusInfo.setPersisted(true);
+                                    if (estatusInfo.getEstatus() == CatEstatusEntity.ER || (estatusInfo.getEstatus() == CatEstatusEntity.ACK2 && estatusInfo.getEstatusAck2() == 0) || estatusInfo.getEstatus() == CatEstatusEntity.ERROR) {
+                                        UpdateStatusDemonImpl.this.estatusInfoMap.remove(estatusInfo.getClOrdId());
                                     }
                                 }
                             }
-                            updateEstatus(estatusClassifier);
                         }
-                        logger.info("Update Status Demon Queue size: " + UpdateStatusDemonImpl.this.estatusInfoMap.size());
-                        Thread.sleep(SLEEP_TIME);
+                        updateEstatus(estatusClassifier);
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.info("Update Status Demon Queue size: " + UpdateStatusDemonImpl.this.estatusInfoMap.size());
+                    try {
+                        Thread.sleep(SLEEP_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+
             }
 
             private void updateEstatus(EstatusInfoClassifier estatusClassifier) {
@@ -96,5 +105,33 @@ public class UpdateStatusDemonImpl implements UpdateStatusDemon {
                 logger.info("Updated estatus from classifier: " + rows + " / " + estatusClassifier.size());
             }
         }, "UpdateStatusDemon").start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    EstatusAck2InfoClassifier classifier = new EstatusAck2InfoClassifierImpl();
+                    EstatusAck2Info estatusAck2Info = null;
+                    while ((estatusAck2Info = UpdateStatusDemonImpl.this.estatusAck2InfoQueue.poll()) != null) {
+                        classifier.add(estatusAck2Info);
+                    }
+                    if (classifier.size() > 0) {
+                        List<EstatusAck2InfoBatch> estatusAck2InfoBatches = classifier.classify();
+                        for (EstatusAck2InfoBatch estatusAck2InfoBatch : estatusAck2InfoBatches) {
+                            try {
+                                dbController.updateStatusAck2Sync(estatusAck2InfoBatch);
+                            } catch (SQLException e) {
+                                logger.error("Error al actualizar los folios " + estatusAck2InfoBatch, e);
+                            }
+                        }
+                    }
+                    try {
+                        Thread.sleep(SLEEP_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, "UpdateStatusAck2Demon").start();
     }
 }

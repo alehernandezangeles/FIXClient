@@ -46,6 +46,7 @@ public interface DBController {
 
     void updateStatus(List<String> clOrdIdListNos, List<String> clOrdIdListOcr, final int estatus);
     int updateStatusSync(List<String> clOrdIdList, int estatus) throws SQLException;
+    int updateStatusAck2Sync(EstatusAck2InfoBatch estatusAck2InfoBatch) throws SQLException;
 
     void editStatus(String clOrdId, int estatus, int estatusAck2, String descrAck2) throws Exception;
 

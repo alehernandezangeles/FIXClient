@@ -13,6 +13,9 @@ public interface JdbcController {
     int updateStatusOcr(String clOrdId, int estatus) throws SQLException;
     int updateStatusOcr(List<String> clOrdIdList, int estatus) throws SQLException;
 
+    int updateStatusNosAck2(List<String> clOrdIdList, int estatus, String descr) throws SQLException;
+    int updateStatusOcrAck2(List<String> clOrdIdList, int estatus, String descr) throws SQLException;
+
     void moveData(String dbSource, String dbTarget, List<String> tblNames);
     int copyData(String dbSource, String dbtarget, String tblName) throws SQLException;
     int deleteData(String dbName, String tblName) throws SQLException;

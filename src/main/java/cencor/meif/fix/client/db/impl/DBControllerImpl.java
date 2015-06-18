@@ -5,6 +5,7 @@ import cencor.meif.fix.client.ErroresAdapterImpl;
 import cencor.meif.fix.client.FixUtils;
 import cencor.meif.fix.client.FixUtilsImpl;
 import cencor.meif.fix.client.db.DBController;
+import cencor.meif.fix.client.db.EstatusAck2InfoBatch;
 import cencor.meif.fix.client.db.UpdateNosStatus;
 import cencor.meif.fix.client.db.UpdateOcrStatus;
 import cencor.meif.fix.client.jdbc.JdbcController;
@@ -259,6 +260,20 @@ public class DBControllerImpl implements DBController {
         if (rows != clOrdIdList.size()) {
             rows += editStatusOcr(clOrdIdList, estatus);
         }
+        return rows;
+    }
+
+    @Override
+    public int updateStatusAck2Sync(EstatusAck2InfoBatch estatusAck2InfoBatch) throws SQLException {
+        List<String> clOrdIdList = estatusAck2InfoBatch.getClOrdIds();
+        int estatus = estatusAck2InfoBatch.getEstatus();
+        String descr = estatusAck2InfoBatch.getDescr();
+
+        int rows = jdbcController.updateStatusNosAck2(clOrdIdList, estatus, descr);
+        if (rows <= 0) {
+            rows = jdbcController.updateStatusOcrAck2(clOrdIdList, estatus, descr);
+        }
+
         return rows;
     }
 

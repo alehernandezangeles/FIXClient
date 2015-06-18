@@ -154,4 +154,44 @@ public class JdbcControllerImpl implements JdbcController {
 
         return rows;
     }
+
+    public int updateStatusNosAck2(List<String> clOrdIdList, int estatus, String descr) throws SQLException {
+        int rows = updateStatusAck2("NOS", clOrdIdList, estatus, descr);
+
+        return rows;
+    }
+
+    @Override
+    public int updateStatusOcrAck2(List<String> clOrdIdList, int estatus, String descr) throws SQLException {
+        int rows = updateStatusAck2("OCR", clOrdIdList, estatus, descr);
+
+        return rows;
+    }
+
+    private int updateStatusAck2(String tblName, List<String> clOrdIdList, int estatus, String descr) throws SQLException {
+        if (clOrdIdList.size() <= 0) {
+            return 0;
+        }
+
+        StringBuilder sb = new StringBuilder("UPDATE " + tblName + " SET EstatusAck2 = ?, MensajeEstatusAck2 = ? WHERE ClOrdID IN ( ");
+        for (int i = 0; i < clOrdIdList.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append("?");
+        }
+        sb.append(")");
+        String updateStr = sb.toString();
+        PreparedStatement pstmt = this.conn.prepareStatement(updateStr);
+        pstmt.setInt(1, estatus);
+        pstmt.setString(2, descr);
+        int count = 3;
+        for (String clOrdId : clOrdIdList) {
+            pstmt.setString(count, clOrdId);
+            count++;
+        }
+        int rows = pstmt.executeUpdate();
+
+        return rows;
+    }
 }
