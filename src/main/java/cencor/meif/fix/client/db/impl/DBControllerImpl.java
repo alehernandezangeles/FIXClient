@@ -23,7 +23,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by alejandro on 5/31/15.
@@ -44,7 +46,9 @@ public class DBControllerImpl implements DBController {
     private static Logger logger = Logger.getLogger(DBControllerImpl.class);
 
     public DBControllerImpl() {
-        emf = Persistence.createEntityManagerFactory("jpaFixClientPU");
+        Map props = new HashMap();
+        props.put("javax.persistence.jdbc.password", JdbcController.PWD);
+        emf = Persistence.createEntityManagerFactory("jpaFixClientPU", props);
         nosController = new NosEntityJpaController(emf);
         ocrControlleer = new OcrEntityJpaController(emf);
         otrosController = new OtrosMsjFixEntityJpaController(emf);

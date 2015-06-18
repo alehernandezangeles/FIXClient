@@ -8,6 +8,8 @@ import java.util.List;
  */
 public interface JdbcController {
 
+    String PWD = "portalmeipwd";
+
     int updateStatusNos(String clOrdId, int estatus) throws SQLException;
     int updateStatusNos(List<String> clOrdIdList, int estatus) throws SQLException;
     int updateStatusOcr(String clOrdId, int estatus) throws SQLException;

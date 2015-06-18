@@ -42,10 +42,9 @@ UPDATE FixClientDB.NOS set TransactTime = CURDATE();
 UPDATE FixClientDB.OCR set TransactTime = CURDATE();
 UPDATE FixClientDB.ACK1 set FechaInsercion = CURDATE();
 UPDATE FixClientDB.ACK2 set FechaInsercion = CURDATE();
-UPDATE FixClientDB.ER set FechaInsercion = CURDATE();
+UPDATE FixClientDB.ER set TransactTime = CURDATE();
 UPDATE FixClientDB.OtrosMsjFix set FechaInsercion = CURDATE();
 UPDATE FixClientDB.Errores set FechaInsercion = CURDATE();
-
 
 -- Delete Hist
 DELETE FROM FixClientHistDB.NOS;

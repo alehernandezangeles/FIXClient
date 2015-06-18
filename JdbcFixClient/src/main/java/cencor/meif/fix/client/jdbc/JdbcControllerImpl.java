@@ -29,10 +29,9 @@ public class JdbcControllerImpl implements JdbcController {
         props.load(jdbcIS);
         String url = props.getProperty("db.url");
         String user = props.getProperty("db.user");
-        String pwd = props.getProperty("db.pwd");
 
         Class.forName("com.mysql.jdbc.Driver").newInstance();
-        this.conn = DriverManager.getConnection(url, user, pwd);
+        this.conn = DriverManager.getConnection(url, user, PWD);
         this.pstmtUpdateStatusNos = conn.prepareStatement(UPDATE_NOS_SET_ESTATUS);
         this.pstmtUpdateStatusOcr = conn.prepareStatement(UPDATE_OCR_SET_ESTATUS);
     }
